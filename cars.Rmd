@@ -1,0 +1,185 @@
+---
+title: "Modelo predictivo de precios de coches"
+author: "Grupo 8 - FID"
+output: html_document
+---
+
+## Introducción
+(Escribir introducción)
+
+## Importación de librerias
+```{r}
+
+# Importación de librerías
+library(caret)
+library(tidyverse)
+```
+
+## Carga de datos
+```{r}
+
+# Carga de ficheros:
+car_data_1 <- read.csv("datasets/car_data_1.csv")
+car_data_2 <- read.csv("datasets/car_data_2.csv")
+car_data_3 <- read.csv("datasets/car_data_3.csv")
+car_data_4 <- read.csv("datasets/car_data_4.csv")
+```
+
+## Visualización inicial de los datos
+Tenemos un total de 4 datasets distintos, por lo que procederemos a analizar cada uno de ellos, teniendo en cuenta los datos y atributos que tiene. Para ello, crearemos un par de funciones que nos serán de ayuda.
+
+```{r}
+
+# Función para conocer el número de valores distintos de cada atributo de un dataset
+numero_valores_distintos <- function(car_dataset) {
+  
+  nombres_atributos <- names(car_dataset)
+  num_valores_distintos_por_atributo <- numeric(length = length(nombres_atributos))
+  for (i in seq_along(nombres_atributos)) {
+    atributo_actual <- nombres_atributos[i]
+    valores_distintos <- unique(car_dataset[, atributo_actual])
+    num_valores_distintos_por_atributo[i] <- length(valores_distintos)
+  }
+  resultados <- data.frame(Atributo = nombres_atributos, NumValoresDistintos = num_valores_distintos_por_atributo)
+  print(resultados)
+
+}
+
+# Función para conocer los posibles valores de unos atributos proporcionados de un dataset
+valores_distintos <- function(car_dataset, nombres_atributos) {
+  
+  valores_distintos_por_atributo <- list()
+  for (i in seq_along(nombres_atributos)) {
+    atributo_actual <- nombres_atributos[i]
+    valores_distintos <- unique(car_dataset[, atributo_actual])
+    valores_distintos_por_atributo[[i]] <- valores_distintos
+  }
+  resultados <- data.frame(
+    Atributo = nombres_atributos,
+    ValoresDistintos = sapply(valores_distintos_por_atributo, function(x) toString(x)),
+    stringsAsFactors = FALSE
+  )
+  print(resultados)
+
+}
+```
+
+Empezaremos con el dataset "car_data_1".
+
+```{r}
+
+# Resumen del dataset
+summary(car_data_1)
+```
+Como podemos observar, hay un total de 301 entradas en este dataset. Hay 9 atributos distintos. Veamos el número de valores distintos que tiene cada atributo.
+
+```{r}
+
+numero_valores_distintos(car_data_1)
+```
+En el caso del atributo "name", que indica el modelo del vehículo, podemos observar que existen 98 coches distintos. El año de fabricación tiene un total de 16 valores distintos (desde 2003 hasta 2018, como hemos visto en la función summary). El precio de venta y el precio actual tienen 156 y 147 valores distintos, respectivamente. Existen 206 valores de kilometraje diferentes.
+
+Es interesante saber que existen 3 tipos de combustibles, 2 tipos de vendedores, 2 tipos de transmisiones y 3 tipos de propietarios. A continuación, mostramos cada uno para observar los posibles valores.
+
+```{r}
+
+# Obtenemos los últimos atributos del dataset
+nombres_atributos <- names(car_data_1)[( ncol(car_data_1) - 3):ncol(car_data_1)]
+
+# Llamamos a la función
+valores_distintos(car_data_1, nombres_atributos)
+```
+
+Como podemos observar, el tipo de combustible, el tipo de vendedor y el tipo de transmisión tienen valores de texto, mientras que el tipo de propietario tiene los valores numéricos 0, 1 y 3.
+
+Analicemos a continuación el dataset "car_data_2". Procederemos de manera similar a como se ha hecho con el primer dataset.
+
+```{r}
+
+# Resumen del dataset
+summary(car_data_2)
+```
+Existen un total de 4340 entradas en el dataset. Hay 8 atributos distintos que, como podemos observar, son similares a los del primer dataset, a excepción del precio actual que no se encuentra en el dataset "car_data_2". Veamos el número de valores distintos que tiene cada atributo.
+
+```{r}
+
+numero_valores_distintos(car_data_2)
+```
+
+A diferencia del dataset anterior, el atributo de modelo del coche tiene un número de valores distintos más elevado al de los atributos año de fabricación, precio de venta y kilometraje.
+
+Volvemos a encontrarnos con un pequeño número de valores posibles en el tipo de combustible, tipo de vendedor, tipo de transmisión y tipo de propietario. Veamos estos valores.
+
+```{r}
+
+# Obtenemos los últimos atributos del dataset
+nombres_atributos <- names(car_data_2)[( ncol(car_data_2) - 3):ncol(car_data_2)]
+
+# Llamamos a la función
+valores_distintos(car_data_2, nombres_atributos)
+```
+
+Podemos observar varias diferencias entre los valores de este dataset y del anterior. El tipo de combustible tiene dos nuevos valores posibles con respecto al dataset "car_data_1". Así mismo, el tipo de vendedor incluye también el valor "Trustmark Dealer". Los tipos de transmisiones son iguales en ambos dataset. La mayor diferencia se encuentra en el tipo de propietarios, ya que en este dataset aparecen 5 posibles valores en formato texto, mientras que en el anterior solo aparecían 3 valores en formato numérico.
+
+Proseguimos con el dataset "car_data_3".
+
+```{r}
+
+# Resumen del dataset
+summary(car_data_3)
+```
+
+Existen un total de 8128 entradas en este dataset. Hay un total de 13 atributos distintos que suponen diferencias con el resto de los datasets usados. Veamos el número de valores distintos que tiene cada atributo.
+
+```{r}
+
+numero_valores_distintos(car_data_3)
+```
+
+Existen un total de 2058 modelos de coche distintos en este dataset. Como anteriormente, procedemos a analizar los posibles valores de los atributos tipo de combustible, tipo de vendedor, tipo de transmisión y tipo de propietario, que pueden ser interesantes para nuestro estudio.
+
+
+```{r}
+
+# Obtenemos los atributos del dataset que nos interesan
+nombres_atributos <- names(car_data_3)[( ncol(car_data_3) - 8):(ncol(car_data_3) - 5)]
+
+# Llamamos a la función
+valores_distintos(car_data_3, nombres_atributos)
+```
+
+Observamos que los valores de los atributos son iguales a los del dataset "car_data_2", a excepción del tipo de combustible, que en el dataset anterior también contiene el valor "Electric".
+
+Seguimos el análisis con el último dataset, "car_data_4".
+
+```{r}
+
+# Resumen del dataset
+summary(car_data_4)
+```
+
+Existen un total de 2059 entradas en este dataset. Además, este dataset es el que mayor número de atributos tiene, con un total de 20. Los atributos que hemos visto en común en los datasets anteriores también aparecen en este, aunque en el caso del modelo del coche se muestra en dos atributos diferenciados, "Make" (marca) y "Model" (modelo). Veamos el número de valores distintos que tiene cada atributo.
+
+```{r}
+
+numero_valores_distintos(car_data_4)
+```
+
+Como podemos observar, existen 33 marcas de coches distintas en el dataset, y un total de 1050 modelos. Procedemos a analizar los posibles valores de los atributos tipo de combustible, tipo de vendedor, tipo de transmisión y tipo de propietario, como hemos hecho con los anteriores datasets.
+
+
+```{r}
+
+# Obtenemos los atributos del dataset que nos interesan
+nombres_atributos <- c('Fuel.Type', 'Transmission', 'Owner', 'Seller.Type')
+
+# Llamamos a la función
+valores_distintos(car_data_4, nombres_atributos)
+```
+
+Los valores de estos atributos en el dataset "car_data_4" tienen bastantes diferencias con el resto de datasets. Este posee un mayor número de valores en el tipo de combustible. Además, los tipos de propietario son diferentes a los que hemos observado en los datasets anteriores, aunque reflejan lo mismo en varios casos (por ejemplo, "First" refleja el mismo valor que "First Owner"). El tipo de vendedor solo comparte el valor "Individual", aunque "Corporate" podría reflejar lo mismo que "Dealer" y "Commercial Registration" podría reflejar el mismo valor que "Trustmark Dealer".
+
+# **Vehicle Dataset** 
+#  es ideal para modelos predictivos, especialmente regresión, y puede ser interesante si estás enfocado en análisis de mercado y precios.
+# - **Modelos de Regresión Lineal y No Lineal para Predicción de Precios**: Pueden ser más o menos complejos dependiendo de la cantidad y tipo de variables involucradas. En general, este tipo de modelo es manejable para alguien con una comprensión básica de la ciencia de datos.
+# - **Análisis Descriptivo**: Al igual que con el conjunto de datos de salarios, realizar análisis descriptivos es relativamente fácil y puede ofrecer insights valiosos.
