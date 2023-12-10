@@ -9,7 +9,6 @@ output: html_document
 
 ## Importación de librerias
 ```{r}
-
 # Importación de librerías
 library(caret)
 library(tidyverse)
@@ -17,7 +16,6 @@ library(tidyverse)
 
 ## Carga de datos
 ```{r}
-
 # Carga de ficheros:
 car_data_1 <- read.csv("datasets/car_data_1.csv")
 car_data_2 <- read.csv("datasets/car_data_2.csv")
@@ -29,10 +27,8 @@ car_data_4 <- read.csv("datasets/car_data_4.csv")
 Tenemos un total de 4 datasets distintos, por lo que procederemos a analizar cada uno de ellos, teniendo en cuenta los datos y atributos que tiene. Para ello, crearemos un par de funciones que nos serán de ayuda.
 
 ```{r}
-
 # Función para conocer el número de valores distintos de cada atributo de un dataset
 numero_valores_distintos <- function(car_dataset) {
-  
   nombres_atributos <- names(car_dataset)
   num_valores_distintos_por_atributo <- numeric(length = length(nombres_atributos))
   for (i in seq_along(nombres_atributos)) {
@@ -42,12 +38,10 @@ numero_valores_distintos <- function(car_dataset) {
   }
   resultados <- data.frame(Atributo = nombres_atributos, NumValoresDistintos = num_valores_distintos_por_atributo)
   print(resultados)
-
 }
 
 # Función para conocer los posibles valores de unos atributos proporcionados de un dataset
 valores_distintos <- function(car_dataset, nombres_atributos) {
-  
   valores_distintos_por_atributo <- list()
   for (i in seq_along(nombres_atributos)) {
     atributo_actual <- nombres_atributos[i]
@@ -60,21 +54,18 @@ valores_distintos <- function(car_dataset, nombres_atributos) {
     stringsAsFactors = FALSE
   )
   print(resultados)
-
 }
 ```
 
 Empezaremos con el dataset "car_data_1".
 
 ```{r}
-
 # Resumen del dataset
 summary(car_data_1)
 ```
 Como podemos observar, hay un total de 301 entradas en este dataset. Hay 9 atributos distintos. Veamos el número de valores distintos que tiene cada atributo.
 
 ```{r}
-
 numero_valores_distintos(car_data_1)
 ```
 En el caso del atributo "name", que indica el modelo del vehículo, podemos observar que existen 98 coches distintos. El año de fabricación tiene un total de 16 valores distintos (desde 2003 hasta 2018, como hemos visto en la función summary). El precio de venta y el precio actual tienen 156 y 147 valores distintos, respectivamente. Existen 206 valores de kilometraje diferentes.
@@ -82,9 +73,8 @@ En el caso del atributo "name", que indica el modelo del vehículo, podemos obse
 Es interesante saber que existen 3 tipos de combustibles, 2 tipos de vendedores, 2 tipos de transmisiones y 3 tipos de propietarios. A continuación, mostramos cada uno para observar los posibles valores.
 
 ```{r}
-
 # Obtenemos los últimos atributos del dataset
-nombres_atributos <- names(car_data_1)[( ncol(car_data_1) - 3):ncol(car_data_1)]
+nombres_atributos <- names(car_data_1)[(ncol(car_data_1) - 3):ncol(car_data_1)]
 
 # Llamamos a la función
 valores_distintos(car_data_1, nombres_atributos)
@@ -95,14 +85,12 @@ Como podemos observar, el tipo de combustible, el tipo de vendedor y el tipo de 
 Analicemos a continuación el dataset "car_data_2". Procederemos de manera similar a como se ha hecho con el primer dataset.
 
 ```{r}
-
 # Resumen del dataset
 summary(car_data_2)
 ```
 Existen un total de 4340 entradas en el dataset. Hay 8 atributos distintos que, como podemos observar, son similares a los del primer dataset, a excepción del precio actual que no se encuentra en el dataset "car_data_2". Veamos el número de valores distintos que tiene cada atributo.
 
 ```{r}
-
 numero_valores_distintos(car_data_2)
 ```
 
@@ -111,9 +99,8 @@ A diferencia del dataset anterior, el atributo de modelo del coche tiene un núm
 Volvemos a encontrarnos con un pequeño número de valores posibles en el tipo de combustible, tipo de vendedor, tipo de transmisión y tipo de propietario. Veamos estos valores.
 
 ```{r}
-
 # Obtenemos los últimos atributos del dataset
-nombres_atributos <- names(car_data_2)[( ncol(car_data_2) - 3):ncol(car_data_2)]
+nombres_atributos <- names(car_data_2)[(ncol(car_data_2) - 3):ncol(car_data_2)]
 
 # Llamamos a la función
 valores_distintos(car_data_2, nombres_atributos)
@@ -124,7 +111,6 @@ Podemos observar varias diferencias entre los valores de este dataset y del ante
 Proseguimos con el dataset "car_data_3".
 
 ```{r}
-
 # Resumen del dataset
 summary(car_data_3)
 ```
@@ -132,7 +118,6 @@ summary(car_data_3)
 Existen un total de 8128 entradas en este dataset. Hay un total de 13 atributos distintos que suponen diferencias con el resto de los datasets usados. Veamos el número de valores distintos que tiene cada atributo.
 
 ```{r}
-
 numero_valores_distintos(car_data_3)
 ```
 
@@ -140,9 +125,8 @@ Existen un total de 2058 modelos de coche distintos en este dataset. Como anteri
 
 
 ```{r}
-
 # Obtenemos los atributos del dataset que nos interesan
-nombres_atributos <- names(car_data_3)[( ncol(car_data_3) - 8):(ncol(car_data_3) - 5)]
+nombres_atributos <- names(car_data_3)[(ncol(car_data_3) - 8):(ncol(car_data_3) - 5)]
 
 # Llamamos a la función
 valores_distintos(car_data_3, nombres_atributos)
@@ -153,7 +137,6 @@ Observamos que los valores de los atributos son iguales a los del dataset "car_d
 Seguimos el análisis con el último dataset, "car_data_4".
 
 ```{r}
-
 # Resumen del dataset
 summary(car_data_4)
 ```
@@ -161,7 +144,6 @@ summary(car_data_4)
 Existen un total de 2059 entradas en este dataset. Además, este dataset es el que mayor número de atributos tiene, con un total de 20. Los atributos que hemos visto en común en los datasets anteriores también aparecen en este, aunque en el caso del modelo del coche se muestra en dos atributos diferenciados, "Make" (marca) y "Model" (modelo). Veamos el número de valores distintos que tiene cada atributo.
 
 ```{r}
-
 numero_valores_distintos(car_data_4)
 ```
 
@@ -169,9 +151,8 @@ Como podemos observar, existen 33 marcas de coches distintas en el dataset, y un
 
 
 ```{r}
-
 # Obtenemos los atributos del dataset que nos interesan
-nombres_atributos <- c('Fuel.Type', 'Transmission', 'Owner', 'Seller.Type')
+nombres_atributos <- c("Fuel.Type", "Transmission", "Owner", "Seller.Type")
 
 # Llamamos a la función
 valores_distintos(car_data_4, nombres_atributos)
