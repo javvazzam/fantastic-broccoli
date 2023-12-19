@@ -160,6 +160,57 @@ valores_distintos(car_data_4, nombres_atributos)
 
 Los valores de estos atributos en el dataset "car_data_4" tienen bastantes diferencias con el resto de datasets. Este posee un mayor número de valores en el tipo de combustible. Además, los tipos de propietario son diferentes a los que hemos observado en los datasets anteriores, aunque reflejan lo mismo en varios casos (por ejemplo, "First" refleja el mismo valor que "First Owner"). El tipo de vendedor solo comparte el valor "Individual", aunque "Corporate" podría reflejar lo mismo que "Dealer" y "Commercial Registration" podría reflejar el mismo valor que "Trustmark Dealer".
 
+A continuación nos centraremos en realizar una análisis de regresión con el dataset número 4.
+
+```{r}
+# Analisis descriptivo Kilometraje - precio
+set.seed(123)
+train_index <- createDataPartition(car_data_1$Selling_Price, p = 0.8, list = FALSE)
+train_data <- car_data_1[train_index, ]
+train_data <- na.omit(train_data)
+test_data <- car_data_1[-train_index, ]
+
+# Exploración de Datos (EDA)
+summary(train_data)
+ggplot(train_data, aes(x = Kms_Driven, y = Selling_Price)) +
+  geom_point() +
+  ggtitle("Relación entre Kilometraje y Precio")
+
+# Modelado (Regresión Lineal)
+model <- lm(Selling_Price ~ Kms_Driven + Year + Fuel_Type + Transmission + Owner + Seller_Type, data = train_data)
+summary(model)
+
+# Evaluación del Modelo en Datos de Prueba
+# Realizar predicciones en el conjunto de prueba
+predictions <- predict(model, newdata = test_data)
+
+# Comparar las predicciones con los valores reales
+comparison <- data.frame(Real = test_data$Selling_Price, Predicciones = predictions)
+
+# Visualizar las primeras filas de la comparación
+head(comparison)
+
+# Crear un gráfico de dispersión para visualizar las predicciones
+ggplot(comparison, aes(x = Real, y = Predicciones)) +
+  geom_point() +
+  geom_abline(intercept = 0, slope = 1, linetype = "dashed", color = "red") +
+  ggtitle("Comparación entre Valores Reales y Predicciones") +
+  xlab("Precio Real") +
+  ylab("Predicciones")
+
+# Calcular el Error Cuadrático Medio (MSE) en el conjunto de prueba
+mse <- mean((predictions - test_data$Selling_Price)^2)
+r_squared <- cor(predictions, test_data$Selling_Price)^2
+
+cat("Error Cuadrático Medio (MSE):", mse, "\n")
+cat("Coeficiente de Determinación (R²):", r_squared, "\n")
+
+```
+Del car_data_1, hemos creado un modelo de entrenamiento predictivo.
+Obtenemos un MSE de 4.783 y un Coeficiente de Determinación 0.72.
+ Esto significa que, en promedio, las predicciones del modelo tienen un error cuadrático medio de aproximadamente 4.78 unidades de precio al cuadrado; y que aproximadamente el 71.76% de la variabilidad en el precio de venta se explica por las variables incluidas en el modelo.
+En estas gráficas podemos ver la relacion kilómetros recorridos por precio en venta, y la predicción de nuestro modelo relacionando las mismas variables. Vemos que este modelo todavía se puede mejorar y ajustar más.
+
 # **Vehicle Dataset** 
 #  es ideal para modelos predictivos, especialmente regresión, y puede ser interesante si estás enfocado en análisis de mercado y precios.
 # - **Modelos de Regresión Lineal y No Lineal para Predicción de Precios**: Pueden ser más o menos complejos dependiendo de la cantidad y tipo de variables involucradas. En general, este tipo de modelo es manejable para alguien con una comprensión básica de la ciencia de datos.
