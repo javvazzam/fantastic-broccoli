@@ -251,7 +251,11 @@ car_data_4 <- car_data_4 %>% select(make, model, year, selling_price, km_driven,
 head(car_data_4)
 ```
 
-Normalización de los valores del dataset "car_data_4" en los atributos seller_type y owner
+## Normalización de valores
+El paso previo antes de la integración de los datos en un mismo dataset es la normalización de todos los datos. Hemos observado que los datos están normalizados para los atributos "make", "model", "year", "selling_price" y "km_driven". El precio de venta que figura en "selling_price" está en rupias, por lo que haremos una conversión para pasarlo a euros, proceso que haremos en todos los datasets. Los atributos "fuel" y "transmission" poseen valores diversos entre los distintos datasets, pero todos ellos están definidos de la misma manera. Por ejemplo, siempre que aparece el atributo de valor "Petrol" aparece escrito de la misma forma.
+
+Los atributos "seller_type" y "owner" son los únicos que difieren entre los datasets. El "car_data_2" y el "car_data_3" tienen los mismos valores, pero el "car_data_4" posee valores distintos. A los valores del atributo "seller_type" del "car_data_4" tendremos que añadirle la palabra "Owner". Además, hemos definido que el valor "UnRegistered Car" del "car_data_4" pasará a denominarse "Test Drive Car", como tenemos en los datasets "car_data_2" y "car_data_3". El valor "4 or More" también se estimará como "Fourth & Above Owner". En el caso del atributo "seller_type", "Corporate" se denominará "Dealer" y "Commercial Registration" se denominará "Trustmark Dealer".
+
 
 ```{r}
 # Diccionario con los valores antiguos y los nuevos de seller_type
