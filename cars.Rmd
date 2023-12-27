@@ -251,9 +251,24 @@ car_data_4 <- car_data_4 %>% select(make, model, year, selling_price, km_driven,
 head(car_data_4)
 ```
 
+Normalización de los valores del dataset "car_data_4" en los atributos seller_type y owner
 
+```{r}
+# Diccionario con los valores antiguos y los nuevos de seller_type
+dicc_valores_seller <- c("Corporate" = "Dealer", "Commercial Registration" = "Trustmark Dealer")
 
+car_data_4 <- car_data_4 %>%
+  mutate(seller_type = ifelse(seller_type %in% names(dicc_valores_seller), dicc_valores_seller[seller_type], seller_type))
 
+# Diccionario con los valores antiguos y los nuevos de seller_type
+dicc_valores_owner <- c("First" = "First Owner", "Second" = "Second Owner", "Third" = "Third Owner", "Fourth" = "Fourth & Above Owner", "4 or More" = "Fourth & Above Owner", "UnRegistered Car" = "Test Drive Car")
+
+car_data_4 <- car_data_4 %>%
+  mutate(owner = ifelse(owner %in% names(dicc_valores_owner), dicc_valores_owner[owner], owner))
+
+# Comprobamos que los atributos se han seleccionado de manera correcta
+head(car_data_4)
+```
 
 
 
