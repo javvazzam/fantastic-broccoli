@@ -10,6 +10,9 @@ output: html_document
 ## Importación de librerias
 ```{r}
 # Importación de librerías
+install.packages("caret")
+install.packages("tidyverse")
+install.packages("dplyr")
 library(caret)
 library(tidyverse)
 library(dplyr)
@@ -221,15 +224,15 @@ Ahora buscamos quedarnos con los atributos que nos puedan ser de ayuda en el pre
 ```{r}
 # Vamos a renombrar cada atributo con el nombre que hemos definido
 car_data_4 <- car_data_4 %>%
-  rename_with(~ "make", .cols = "Make") %>%
-  rename_with(~ "model", .cols = "Model") %>%
-  rename_with(~ "selling_price", .cols = "Price") %>%
-  rename_with(~ "year", .cols = "Year") %>%
-  rename_with(~ "km_driven", .cols = "Kilometer") %>%
-  rename_with(~ "fuel", .cols = "Fuel.Type") %>%
-  rename_with(~ "transmission", .cols = "Transmission") %>%
-  rename_with(~ "owner", .cols = "Owner") %>%
-  rename_with(~ "seller_type", .cols = "Seller.Type")
+  rename_with(~"make", .cols = "Make") %>%
+  rename_with(~"model", .cols = "Model") %>%
+  rename_with(~"selling_price", .cols = "Price") %>%
+  rename_with(~"year", .cols = "Year") %>%
+  rename_with(~"km_driven", .cols = "Kilometer") %>%
+  rename_with(~"fuel", .cols = "Fuel.Type") %>%
+  rename_with(~"transmission", .cols = "Transmission") %>%
+  rename_with(~"owner", .cols = "Owner") %>%
+  rename_with(~"seller_type", .cols = "Seller.Type")
 
 # Comprobamos que los atributos se han cambiado de manera correcta
 head(car_data_4)
@@ -317,7 +320,6 @@ ggplot(car_dataset_total, aes(x = fuel, fill = fuel)) +
   xlab("Tipo de Combustible") +
   ylab("Frecuencia") +
   theme_minimal()
-
 ```
 
 Gráfico de barras para tipo de dispersión
@@ -362,7 +364,6 @@ ggplot(car_dataset_total, aes(x = factor(owner), fill = owner)) +
   xlab("Tipo de Propietario") +
   ylab("Frecuencia") +
   theme_minimal()
-
 ```
 
 Gráfico de violín para comparar la distribución de precios por tipo de transmisión
@@ -375,7 +376,6 @@ ggplot(car_dataset_total, aes(x = transmission, y = selling_price, fill = transm
   xlab("Tipo de Transmisión") +
   ylab("Precio de Venta") +
   theme_minimal()
-
 ```
 
 Mapa de calor comparando la correlación entre las variables numéricas en el conjunto de datos.
@@ -397,7 +397,6 @@ correlation_matrix <- cor(numeric_data)
 
 # Crea un mapa de calor con la correlación
 corrplot(correlation_matrix, method = "color", addCoef.col = "black", title = "Mapa de Calor de Correlación")
-
 ```
 
 Estos puntos de datos sugieren que los usuarios están más interesados en los automóviles más nuevos con un precio de venta más bajo y un kilometraje menor.
@@ -448,7 +447,6 @@ r_squared <- cor(predictions, test_data$Selling_Price)^2
 
 cat("Error Cuadrático Medio (MSE):", mse, "\n")
 cat("Coeficiente de Determinación (R²):", r_squared, "\n")
-
 ```
 Del car_data_1, hemos creado un modelo de entrenamiento predictivo.
 Obtenemos un MSE de 4.783 y un Coeficiente de Determinación 0.72.
