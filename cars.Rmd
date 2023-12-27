@@ -304,12 +304,103 @@ head(car_dataset_total)
 ```
 
 
+## Visualizazión
 
+Gráfico de barras para tipo de combustible
+```{r}
+library(ggplot2)
 
+# Gráfico de barras para el tipo de combustible
+ggplot(car_dataset_total, aes(x = fuel, fill = fuel)) +
+  geom_bar() +
+  ggtitle("Distribución de Tipos de Combustible en car_data_2") +
+  xlab("Tipo de Combustible") +
+  ylab("Frecuencia") +
+  theme_minimal()
 
+```
 
+Gráfico de barras para tipo de dispersión
+```{r}
+# Gráfico de barras para el tipo de transmisión
+ggplot(car_dataset_total, aes(x = transmission, fill = transmission)) +
+  geom_bar() +
+  ggtitle("Distribución de Tipos de Transmisión en car_data_2") +
+  xlab("Tipo de Transmisión") +
+  ylab("Frecuencia") +
+  theme_minimal()
+```
 
+Gráfico de dispersión para año y precio de venta
+```{r}
+# Gráfico de dispersión para año y precio de venta
+ggplot(car_dataset_total, aes(x = year, y = selling_price)) +
+  geom_point() +
+  ggtitle("Relación entre Año y Precio de Venta en car_data_2") +
+  xlab("Año") +
+  ylab("Precio de Venta") +
+  theme_minimal()
+```
 
+Gráfico de torta para el tipo de vendedor
+```{r}
+# Gráfico circular para el tipo de vendedor
+ggplot(car_dataset_total, aes(x = factor(1), fill = seller_type)) +
+  geom_bar(width = 1, stat = "count") +
+  coord_polar(theta = "y") +
+  ggtitle("Distribución de Tipos de Vendedor en car_data_2") +
+  theme_void() +
+  theme(legend.position = "bottom")
+````
+
+Gráfico de barras apiladas para tipo de propietario
+```{r}
+# Gráfico de barras apiladas para el tipo de propietario
+ggplot(car_dataset_total, aes(x = factor(owner), fill = owner)) +
+  geom_bar(position = "stack") +
+  ggtitle("Distribución de Tipos de Propietario en car_data_2") +
+  xlab("Tipo de Propietario") +
+  ylab("Frecuencia") +
+  theme_minimal()
+
+```
+
+Gráfico de violín para comparar la distribución de precios por tipo de transmisión
+
+```{r}
+# Gráfico de violín para comparar la distribución de precios por tipo de transmisión
+ggplot(car_dataset_total, aes(x = transmission, y = selling_price, fill = transmission)) +
+  geom_violin(trim = FALSE) +
+  ggtitle("Distribución de Precios de Venta por Tipo de Transmisión en car_data_2") +
+  xlab("Tipo de Transmisión") +
+  ylab("Precio de Venta") +
+  theme_minimal()
+
+```
+
+Mapa de calor comparando la correlación entre las variables numéricas en el conjunto de datos.
+```{r}
+# Instala el paquete si no lo tienes instalado
+if (!requireNamespace("corrplot", quietly = TRUE)) {
+  install.packages("corrplot")
+}
+
+# Carga la biblioteca
+library(corrplot)
+
+# Selecciona solo las variables numéricas
+numeric_vars <- sapply(car_data_2, is.numeric)
+numeric_data <- car_data_2[, numeric_vars]
+
+# Calcula la matriz de correlación
+correlation_matrix <- cor(numeric_data)
+
+# Crea un mapa de calor con la correlación
+corrplot(correlation_matrix, method = "color", addCoef.col = "black", title = "Mapa de Calor de Correlación")
+
+```
+
+Estos puntos de datos sugieren que los usuarios están más interesados en los automóviles más nuevos con un precio de venta más bajo y un kilometraje menor.
 
 
 
