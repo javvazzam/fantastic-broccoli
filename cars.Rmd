@@ -256,7 +256,6 @@ El paso previo antes de la integración de los datos en un mismo dataset es la n
 
 Los atributos "seller_type" y "owner" son los únicos que difieren entre los datasets. El "car_data_2" y el "car_data_3" tienen los mismos valores, pero el "car_data_4" posee valores distintos. A los valores del atributo "seller_type" del "car_data_4" tendremos que añadirle la palabra "Owner". Además, hemos definido que el valor "UnRegistered Car" del "car_data_4" pasará a denominarse "Test Drive Car", como tenemos en los datasets "car_data_2" y "car_data_3". El valor "4 or More" también se estimará como "Fourth & Above Owner". En el caso del atributo "seller_type", "Corporate" se denominará "Dealer" y "Commercial Registration" se denominará "Trustmark Dealer".
 
-
 ```{r}
 # Diccionario con los valores antiguos y los nuevos de seller_type
 dicc_valores_seller <- c("Corporate" = "Dealer", "Commercial Registration" = "Trustmark Dealer")
@@ -264,15 +263,43 @@ dicc_valores_seller <- c("Corporate" = "Dealer", "Commercial Registration" = "Tr
 car_data_4 <- car_data_4 %>%
   mutate(seller_type = ifelse(seller_type %in% names(dicc_valores_seller), dicc_valores_seller[seller_type], seller_type))
 
-# Diccionario con los valores antiguos y los nuevos de seller_type
+# Diccionario con los valores antiguos y los nuevos de owner
 dicc_valores_owner <- c("First" = "First Owner", "Second" = "Second Owner", "Third" = "Third Owner", "Fourth" = "Fourth & Above Owner", "4 or More" = "Fourth & Above Owner", "UnRegistered Car" = "Test Drive Car")
 
 car_data_4 <- car_data_4 %>%
   mutate(owner = ifelse(owner %in% names(dicc_valores_owner), dicc_valores_owner[owner], owner))
 
-# Comprobamos que los atributos se han seleccionado de manera correcta
+# Comprobamos que los atributos se han cambiado de manera correcta
 head(car_data_4)
 ```
+
+A continuación, unificaremos los datos de los 3 datasets seleccionados.
+
+```{r}
+# Unificamos los datos
+car_dataset_total <- rbind(car_data_2, car_data_3, car_data_4)
+
+# Comprobamos que los datasets se han unido de manera correcta
+head(car_dataset_total)
+
+# Además, comprobaremos que tiene el mismo número de filas que la suma de los 3 datasets
+suma_filas_datasets <- nrow(car_data_2) + nrow(car_data_3) + nrow(car_data_4)
+
+# Suma de las filas de los datasets
+print(suma_filas_datasets)
+
+# Número de filas del dataset unificado
+print(nrow(car_dataset_total))
+```
+
+
+
+
+
+
+
+
+
 
 
 
