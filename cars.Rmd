@@ -292,6 +292,16 @@ print(suma_filas_datasets)
 print(nrow(car_dataset_total))
 ```
 
+Por último, para obtener el dataset con el que trabajaremos finalmente, convertiremos el precio de venta de rupias a euros, multiplicándolo por un factor.
+
+```{r}
+# Unificamos los datos
+car_dataset_total <- car_dataset_total %>%
+  mutate(selling_price = selling_price * 0.011)
+
+# Comprobamos que el atributo se ha cambiado de manera correcta
+head(car_dataset_total)
+```
 
 
 
