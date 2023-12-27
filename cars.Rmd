@@ -10,12 +10,22 @@ output: html_document
 ## Importación de librerias
 ```{r}
 # Importación de librerías
-install.packages("caret")
-install.packages("tidyverse")
-install.packages("dplyr")
+if (!requireNamespace("caret", quietly = TRUE)) {
+  install.packages("caret")
+}
+if (!requireNamespace("tidyverse", quietly = TRUE)) {
+  install.packages("tidyverse")
+}
+if (!requireNamespace("dplyr", quietly = TRUE)) {
+  install.packages("dplyr")
+}
+if (!requireNamespace("corrplot", quietly = TRUE)) {
+  install.packages("corrplot")
+}
 library(caret)
 library(tidyverse)
 library(dplyr)
+library(corrplot)
 ```
 
 ## Carga de datos
@@ -380,11 +390,6 @@ ggplot(car_dataset_total, aes(x = transmission, y = selling_price, fill = transm
 
 Mapa de calor comparando la correlación entre las variables numéricas en el conjunto de datos.
 ```{r}
-# Instala el paquete si no lo tienes instalado
-if (!requireNamespace("corrplot", quietly = TRUE)) {
-  install.packages("corrplot")
-}
-
 # Carga la biblioteca
 library(corrplot)
 
@@ -453,6 +458,44 @@ Obtenemos un MSE de 4.783 y un Coeficiente de Determinación 0.72.
 Esto significa que, en promedio, las predicciones del modelo tienen un error cuadrático medio de aproximadamente 4.78 unidades de precio al cuadrado; y que aproximadamente el 71.76% de la variabilidad en el precio de venta se explica por las variables incluidas en el modelo.
 En estas gráficas podemos ver la relacion kilómetros recorridos por precio en venta, y la predicción de nuestro modelo relacionando las mismas variables. Vemos que este modelo todavía se puede mejorar y ajustar más.
 
+
+
+
+
+```{r}
+car_dataset_total$fuel <- as.factor(car_dataset_total$fuel)
+ctrl <- trainControl(method = "cv", number = 10, verboseIter = TRUE)
+
+# Modelado (Regresión Lineal con validación cruzada k-fold)
+model_CV <- train(selling_price ~ km_driven + year + fuel + transmission + owner + seller_type,
+  data = car_dataset_total,
+  method = "lm",
+  trControl = ctrl
+)
+# Realizar predicciones durante la validación cruzada
+predictions_cv <- predict(model_CV)
+
+# Comparar las predicciones con los valores reales en cada iteración
+comparison_cv <- data.frame(Real = car_dataset_total$selling_price, Predicciones = predictions_cv)
+
+# Visualizar las primeras filas de la comparación
+head(comparison_cv)
+
+# Crear un gráfico de dispersión para visualizar las predicciones en cada iteración
+ggplot(comparison_cv, aes(x = Real, y = Predicciones)) +
+  geom_point() +
+  geom_abline(intercept = 0, slope = 1, linetype = "dashed", color = "red") +
+  ggtitle("Comparación entre Valores Reales y Predicciones (Validación Cruzada k-fold)") +
+  xlab("Precio Real") +
+  ylab("Predicciones")
+
+# Calcular el Error Cuadrático Medio (MSE) durante la validación cruzada
+mse_cv <- mean((predictions_cv - car_dataset_total$selling_price)^2)
+r_squared_cv <- cor(predictions_cv, car_dataset_total$selling_price)^2
+
+cat("Error Cuadrático Medio (MSE) durante la Validación Cruzada:", mse_cv, "\n")
+cat("Coeficiente de Determinación (R²) durante la Validación Cruzada:", r_squared_cv, "\n")
+```
 # **Vehicle Dataset** 
 #  es ideal para modelos predictivos, especialmente regresión, y puede ser interesante si estás enfocado en análisis de mercado y precios.
 # - **Modelos de Regresión Lineal y No Lineal para Predicción de Precios**: Pueden ser más o menos complejos dependiendo de la cantidad y tipo de variables involucradas. En general, este tipo de modelo es manejable para alguien con una comprensión básica de la ciencia de datos.
