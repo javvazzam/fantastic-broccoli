@@ -64,11 +64,13 @@ Empezaremos con el dataset "car_data_1".
 # Resumen del dataset
 summary(car_data_1)
 ```
+
 Como podemos observar, hay un total de 301 entradas en este dataset. Hay 9 atributos distintos. Veamos el número de valores distintos que tiene cada atributo.
 
 ```{r}
 numero_valores_distintos(car_data_1)
 ```
+
 En el caso del atributo "name", que indica el modelo del vehículo, podemos observar que existen 98 coches distintos. El año de fabricación tiene un total de 16 valores distintos (desde 2003 hasta 2018, como hemos visto en la función summary). El precio de venta y el precio actual tienen 156 y 147 valores distintos, respectivamente. Existen 206 valores de kilometraje diferentes.
 
 Es interesante saber que existen 3 tipos de combustibles, 2 tipos de vendedores, 2 tipos de transmisiones y 3 tipos de propietarios. A continuación, mostramos cada uno para observar los posibles valores.
@@ -89,6 +91,7 @@ Analicemos a continuación el dataset "car_data_2". Procederemos de manera simil
 # Resumen del dataset
 summary(car_data_2)
 ```
+
 Existen un total de 4340 entradas en el dataset. Hay 8 atributos distintos que, como podemos observar, son similares a los del primer dataset, a excepción del precio actual que no se encuentra en el dataset "car_data_2". Veamos el número de valores distintos que tiene cada atributo.
 
 ```{r}
@@ -123,7 +126,6 @@ numero_valores_distintos(car_data_3)
 ```
 
 Existen un total de 2058 modelos de coche distintos en este dataset. Como anteriormente, procedemos a analizar los posibles valores de los atributos tipo de combustible, tipo de vendedor, tipo de transmisión y tipo de propietario, que pueden ser interesantes para nuestro estudio.
-
 
 ```{r}
 # Obtenemos los atributos del dataset que nos interesan
@@ -295,7 +297,7 @@ print(nrow(car_dataset_total))
 Por último, para obtener el dataset con el que trabajaremos finalmente, convertiremos el precio de venta de rupias a euros, multiplicándolo por un factor.
 
 ```{r}
-# Unificamos los datos
+# Aplicamos el factor de conversión de 0.011
 car_dataset_total <- car_dataset_total %>%
   mutate(selling_price = selling_price * 0.011)
 
