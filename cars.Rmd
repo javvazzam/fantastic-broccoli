@@ -417,7 +417,8 @@ A continuación nos centraremos en realizar una análisis de regresión para el 
 
 # Analisis descriptivo Kilometraje - precio
 car_dataset_total$fuel <- as.factor(car_dataset_total$fuel)
-set.seed(123)
+car_dataset_total <- car_dataset_total[car_dataset_total$selling_price <= 50000, ]
+set.seed(8)
 train_index <- createDataPartition(car_dataset_total$selling_price, p = 0.8, list = FALSE)
 train_data <- car_dataset_total[train_index, ]
 train_data <- na.omit(train_data)
@@ -431,8 +432,8 @@ levels(test_data$fuel)
 
 #Eliminamos dos filas que contienen un par de tipos de fuel que acaban separadas en datos de prueba y de
 #entrenamiento, y por lo tanto hace que no tengan los mismos niveles
-train_data <- train_data[!(train_data$fuel %in% c("Petrol + CNG")), ]
-test_data <- test_data[!(test_data$fuel %in% c("Petrol + LPG")), ]
+train_data <- train_data[!(train_data$fuel %in% c("Petrol + LPG", "Petrol + CNG")), ]
+test_data <- test_data[!(test_data$fuel %in% c("Petrol + LPG", "Petrol + CNG")), ]
 
 
 # Exploración de Datos (EDA)
@@ -442,7 +443,12 @@ ggplot(train_data, aes(x = km_driven, y = selling_price)) +
   ggtitle("Relación entre Kilometraje y Precio")
 
 # Modelado (Regresión Lineal)
-model <- lm(selling_price ~ km_driven + year + fuel + transmission + owner + seller_type, data = train_data)
+model <- train(
+  selling_price ~ km_driven + year,
+  data = train_data,
+  method = "rf",  
+  trControl = control
+)
 summary(model)
 
 # Evaluación del Modelo en Datos de Prueba
@@ -481,17 +487,17 @@ En estas gráficas podemos ver la relacion kilómetros recorridos por precio en 
 
 ```{r}
 car_dataset_total$fuel <- as.factor(car_dataset_total$fuel)
-ctrl <- trainControl(method = "cv", number = 10, verboseIter = TRUE)
+ctrl <- trainControl(method = "cv", number = 2, verboseIter = TRUE)
 
 # Modelado (Regresión Lineal con validación cruzada k-fold)
-model_CV <- train(selling_price ~ km_driven + year + fuel + transmission + owner + seller_type,
+model_CV <- train(selling_price ~ make + km_driven + year + fuel + transmission + owner + seller_type,
   data = car_dataset_total,
-  method = "lm",
+  method = "rf",
   trControl = ctrl
 )
 # Realizar predicciones durante la validación cruzada
 predictions_cv <- predict(model_CV)
-predictions <- pmax(predictions, 0)
+#predictions_cv <- pmax(predictions_cv, 0)
 
 # Comparar las predicciones con los valores reales en cada iteración
 comparison_cv <- data.frame(Real = car_dataset_total$selling_price, Predicciones = predictions_cv)
