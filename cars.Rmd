@@ -520,6 +520,134 @@ r_squared_cv <- cor(predictions_cv, car_dataset_total$selling_price)^2
 cat("Error Cuadrático Medio (MSE) durante la Validación Cruzada:", mse_cv, "\n")
 cat("Coeficiente de Determinación (R²) durante la Validación Cruzada:", r_squared_cv, "\n")
 ```
+```{r}
+car_dataset_total$selling_price_log <- log1p(car_dataset_total$selling_price)
+car_dataset_total$fuel <- as.factor(car_dataset_total$fuel)
+ctrl <- trainControl(method = "cv", number = 10, verboseIter = TRUE)
+
+# Modelado (Regresión Lineal con validación cruzada k-fold)
+model_CV <- train(selling_price_log ~ make + km_driven + year + fuel + transmission + owner + seller_type,
+  data = car_dataset_total,
+  method = "lm",
+  trControl = ctrl
+)
+# Realizar predicciones durante la validación cruzada
+predictions_cv <- predict(model_CV)
+predictions_original <- expm1(predictions_cv)
+ 
+# Comparar las predicciones con los valores reales en cada iteración
+comparison_cv <- data.frame(Real = car_dataset_total$selling_price , Predicciones = predictions_original)
+
+
+# Visualizar las primeras filas de la comparación
+head(comparison_cv)
+
+# Crear un gráfico de dispersión para visualizar las predicciones en cada iteración
+ggplot(comparison_cv, aes(x = Real, y = Predicciones)) +
+  geom_point() +
+  geom_abline(intercept = 0, slope = 1, linetype = "dashed", color = "red") +
+  ggtitle("Comparación entre Valores Reales y Predicciones (Validación Cruzada k-fold)") +
+  xlab("Precio Real") +
+  ylab("Predicciones")
+
+# Calcular el Error Cuadrático Medio (MSE) durante la validación cruzada
+mse_cv <- mean((predictions_cv - car_dataset_total$selling_price)^2)
+r_squared_cv <- cor(predictions_cv, car_dataset_total$selling_price)^2
+
+cat("Error Cuadrático Medio (MSE) durante la Validación Cruzada:", mse_cv, "\n")
+cat("Coeficiente de Determinación (R²) durante la Validación Cruzada:", r_squared_cv, "\n")
+```
+
+
+```{r}
+car_dataset_total$fuel <- as.factor(car_dataset_total$fuel)
+ctrl <- trainControl(method = "cv", number = 10, verboseIter = TRUE)
+
+# Modelado (Regresión Lineal con validación cruzada k-fold)
+model_CV <- train(selling_price ~ make + km_driven + year + fuel + transmission + owner + seller_type,
+  data = car_dataset_total,
+  method = "knn",
+  trControl = ctrl
+)
+# Realizar predicciones durante la validación cruzada
+predictions_cv <- predict(model_CV)
+ 
+# Comparar las predicciones con los valores reales en cada iteración
+comparison_cv <- data.frame(Real = car_dataset_total$selling_price , Predicciones = predictions_cv)
+
+
+# Visualizar las primeras filas de la comparación
+head(comparison_cv)
+
+# Crear un gráfico de dispersión para visualizar las predicciones en cada iteración
+ggplot(comparison_cv, aes(x = Real, y = Predicciones)) +
+  geom_point() +
+  geom_abline(intercept = 0, slope = 1, linetype = "dashed", color = "red") +
+  ggtitle("Comparación entre Valores Reales y Predicciones (Validación Cruzada k-fold)") +
+  xlab("Precio Real") +
+  ylab("Predicciones")
+
+# Calcular el Error Cuadrático Medio (MSE) durante la validación cruzada
+mse_cv <- mean((predictions_cv - car_dataset_total$selling_price)^2)
+r_squared_cv <- cor(predictions_cv, car_dataset_total$selling_price)^2
+
+cat("Error Cuadrático Medio (MSE) durante la Validación Cruzada:", mse_cv, "\n")
+cat("Coeficiente de Determinación (R²) durante la Validación Cruzada:", r_squared_cv, "\n")
+```
+
+
+
+```{r}
+variables_clustering <- car_dataset_total[, c("km_driven", "year")]
+ 
+# Normalizar las variables si es necesario
+#scaled_variables <- scale(variables_clustering)
+ 
+# Especificar el número de clusters (k)
+k <- 3
+ 
+# Aplicar k-medias
+kmeans_result <- kmeans(variables_clustering, centers = k)
+ 
+# Mostrar los resultados
+print(kmeans_result)
+ 
+# Visualizar los clusters en un gráfico de dispersión
+plot(variables_clustering, col = kmeans_result$cluster, main = "K-Medias Clustering", xlab = "Kilómetros Conducidos", ylab = "Año")
+points(kmeans_result$centers, col = 1:k, pch = 8, cex = 2)
+```
+
+```{r}
+ 
+# Asumiendo que car_dataset_total ya está cargado y tiene la estructura adecuada
+ 
+# Seleccionar las variables relevantes para el clustering
+variables_clustering <- car_dataset_total[, c("km_driven", "year")]
+ 
+# Calcular la matriz de distancias
+dist_matrix <- dist(variables_clustering)
+ 
+# Aplicar clustering jerárquico
+hierarchical_result <- hclust(dist_matrix, method = "ward.D2")
+ 
+# Cortar el dendrograma para obtener clusters
+k <- 3
+clusters <- cutree(hierarchical_result, k)
+ 
+# Agregar la columna de clusters al conjunto de datos
+clusters_mutated <- mutate(variables_clustering, cluster = as.factor(clusters))
+ 
+plot(hierarchical_result, main = "Clustering Jerárquico", xlab = "Índice de la Observación", ylab = "Altura")
+rect.hclust(hierarchical_result, k = k, border = 2:k)
+
+# Visualizar los clusters en un gráfico de dispersión
+plot(variables_clustering, col = clusters_mutated$cluster, main = "ARBOL Clustering", xlab = "Kilómetros Conducidos", ylab = "Año")
+points(clusters_mutated$centers, col = 1:k, pch = 8, cex = 2)
+```
+
+
+
+
 Una vez aplicamos K-fold CV observamos que las predicciones son más acotadas.
 # **Vehicle Dataset** 
 #  es ideal para modelos predictivos, especialmente regresión, y puede ser interesante si estás enfocado en análisis de mercado y precios.
