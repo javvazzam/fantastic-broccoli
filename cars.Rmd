@@ -369,7 +369,7 @@ ggplot(car_dataset_total, aes(x = factor(1), fill = seller_type)) +
   ggtitle("Distribución de Tipos de Vendedor en car_data_2") +
   theme_void() +
   theme(legend.position = "bottom")
-````
+```
 
 Gráfico de barras apiladas para tipo de propietario
 ```{r}
@@ -457,48 +457,9 @@ En estas gráficas podemos ver la relacion kilómetros recorridos por precio en 
 
 
 
-
-
-```{r}
-car_dataset_total$fuel <- as.factor(car_dataset_total$fuel)
-ctrl <- trainControl(method = "cv", number = 2, verboseIter = TRUE)
-
-# Modelado (Regresión Lineal con validación cruzada k-fold)
-model_CV <- train(selling_price ~ make + km_driven + year + fuel + transmission + owner + seller_type,
-  data = car_dataset_total,
-  method = "rf",
-  trControl = ctrl
-)
-# Realizar predicciones durante la validación cruzada
-predictions_cv <- predict(model_CV)
-#predictions_cv <- pmax(predictions_cv, 0)
-
-# Comparar las predicciones con los valores reales en cada iteración
-comparison_cv <- data.frame(Real = car_dataset_total$selling_price, Predicciones = predictions_cv)
-
-# Visualizar las primeras filas de la comparación
-head(comparison_cv)
-
-# Crear un gráfico de dispersión para visualizar las predicciones en cada iteración
-ggplot(comparison_cv, aes(x = Real, y = Predicciones)) +
-  geom_point() +
-  geom_abline(intercept = 0, slope = 1, linetype = "dashed", color = "red") +
-  ggtitle("Comparación entre Valores Reales y Predicciones (Random Forest)") +
-  xlab("Precio Real") +
-  ylab("Predicciones")
-
-# Calcular el Error Cuadrático Medio (MSE) durante la validación cruzada
-mse_rf <- mean((predictions_cv - car_dataset_total$selling_price)^2)
-r_squared_rf <- cor(predictions_cv, car_dataset_total$selling_price)^2
-mae_rf <- mean(abs(predictions_cv - car_dataset_total$selling_price))
-
-cat("Error Cuadrático Medio (MSE) (Random Forest):", mse_rf, "\n")
-cat("Coeficiente de Determinación (R²) (Random Forest):", r_squared_rf, "\n")
-cat("Error Absoluto Medio (MAE) (Random Forest):", mae_rf, "\n")
-```
+REGRESIÓN LINEAL
 ```{r}
 car_dataset_total$selling_price_log <- log1p(car_dataset_total$selling_price)
-car_dataset_total$fuel <- as.factor(car_dataset_total$fuel)
 ctrl <- trainControl(method = "cv", number = 10, verboseIter = TRUE)
 
 # Modelado (Regresión Lineal con validación cruzada k-fold)
@@ -526,7 +487,6 @@ ggplot(comparison_cv, aes(x = Real, y = Predicciones)) +
   xlab("Precio Real") +
   ylab("Predicciones")
 
-# Calcular el Error Cuadrático Medio (MSE) durante la validación cruzada
 mse_lm <- mean((predictions_cv - car_dataset_total$selling_price)^2)
 r_squared_lm <- cor(predictions_cv, car_dataset_total$selling_price)^2
 mae_lm <- mean(abs(predictions_cv - car_dataset_total$selling_price))
@@ -537,11 +497,48 @@ cat("Error Absoluto Medio (MAE) (Regresión Lineal):", mae_lm, "\n")
 ```
 
 
+RANDOM FOREST
 ```{r}
-car_dataset_total$fuel <- as.factor(car_dataset_total$fuel)
+ctrl <- trainControl(method = "cv", number = 2, verboseIter = TRUE)
+
+# Modelado (Random Forest con validación cruzada k-fold)
+model_CV <- train(selling_price ~ make + km_driven + year + fuel + transmission + owner + seller_type,
+  data = car_dataset_total,
+  method = "rf",
+  trControl = ctrl
+)
+# Realizar predicciones durante la validación cruzada
+predictions_cv <- predict(model_CV)
+
+# Comparar las predicciones con los valores reales en cada iteración
+comparison_cv <- data.frame(Real = car_dataset_total$selling_price, Predicciones = predictions_cv)
+
+# Visualizar las primeras filas de la comparación
+head(comparison_cv)
+
+# Crear un gráfico de dispersión para visualizar las predicciones en cada iteración
+ggplot(comparison_cv, aes(x = Real, y = Predicciones)) +
+  geom_point() +
+  geom_abline(intercept = 0, slope = 1, linetype = "dashed", color = "red") +
+  ggtitle("Comparación entre Valores Reales y Predicciones (Random Forest)") +
+  xlab("Precio Real") +
+  ylab("Predicciones")
+
+mse_rf <- mean((predictions_cv - car_dataset_total$selling_price)^2)
+r_squared_rf <- cor(predictions_cv, car_dataset_total$selling_price)^2
+mae_rf <- mean(abs(predictions_cv - car_dataset_total$selling_price))
+
+cat("Error Cuadrático Medio (MSE) (Random Forest):", mse_rf, "\n")
+cat("Coeficiente de Determinación (R²) (Random Forest):", r_squared_rf, "\n")
+cat("Error Absoluto Medio (MAE) (Random Forest):", mae_rf, "\n")
+```
+
+
+KNN
+```{r}
 ctrl <- trainControl(method = "cv", number = 10, verboseIter = TRUE)
 
-# Modelado (Regresión Lineal con validación cruzada k-fold)
+# Modelado (KNN con validación cruzada k-fold)
 model_CV <- train(selling_price ~ make + km_driven + year + fuel + transmission + owner + seller_type,
   data = car_dataset_total,
   method = "knn",
@@ -565,7 +562,6 @@ ggplot(comparison_cv, aes(x = Real, y = Predicciones)) +
   xlab("Precio Real") +
   ylab("Predicciones")
 
-# Calcular el Error Cuadrático Medio (MSE) durante la validación cruzada
 mse_knn <- mean((predictions_cv - car_dataset_total$selling_price)^2)
 r_squared_knn <- cor(predictions_cv, car_dataset_total$selling_price)^2
 mae_knn <- mean(abs(predictions_cv - car_dataset_total$selling_price))
@@ -576,11 +572,12 @@ cat("Error Absoluto Medio (MAE) (KNN):", mae_knn, "\n")
 ```
 
 
+COMPARACIÓN
 ```{r}
-algoritmos <- c("KNN", "Regresión Lineal")
+algoritmos <- c("Regresión Lineal", "Random Forest", "KNN")
 
 # MSE
-mse_group <- c(mse_knn, mse_lm)
+mse_group <- c(mse_lm, mse_rf, mse_knn)
 barplot(mse_group, names.arg = algoritmos, col = c("blue", "green", "orange"),
         main = "Comparación de MSE",
         ylab = "Valores",
@@ -591,7 +588,7 @@ text(seq_along(mse_group), mse_group, labels = mse_group, pos = 3, col = "black"
 
 
 # R²
-r_squared_group <- c(r_squared_knn, r_squared_lm)
+r_squared_group <- c(r_squared_lm, r_squared_rf, r_squared_knn)
 barplot(r_squared_group, names.arg = algoritmos, col = c("blue", "green", "orange"),
         main = "Comparación de R²",
         ylab = "Valores",
@@ -602,7 +599,7 @@ text(seq_along(r_squared_group), r_squared_group, labels = r_squared_group, pos 
 
 
 # MAE
-mae_group <- c(mae_knn, mae_lm)
+mae_group <- c(mae_lm, mae_rf, mae_knn)
 barplot(mae_group, names.arg = algoritmos, col = c("blue", "green", "orange"),
         main = "Comparación de MAE",
         ylab = "Valores",
