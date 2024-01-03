@@ -442,39 +442,9 @@ ggplot(train_data, aes(x = km_driven, y = selling_price)) +
   geom_point() +
   ggtitle("Relación entre Kilometraje y Precio")
 
-# Modelado (Regresión Lineal)
-model <- train(
-  selling_price ~ km_driven + year,
-  data = train_data,
-  method = "rf",  
-  trControl = control
-)
-summary(model)
 
-# Evaluación del Modelo en Datos de Prueba
-# Realizar predicciones en el conjunto de prueba
-predictions <- predict(model, newdata = test_data)
 
-# Comparar las predicciones con los valores reales
-comparison <- data.frame(Real = test_data$selling_price, Predicciones = predictions)
 
-# Visualizar las primeras filas de la comparación
-print(comparison)
-
-# Crear un gráfico de dispersión para visualizar las predicciones
-ggplot(comparison, aes(x = Real, y = Predicciones)) +
-  geom_point() +
-  geom_abline(intercept = 0, slope = 1, linetype = "dashed", color = "red") +
-  ggtitle("Comparación entre Valores Reales y Predicciones") +
-  xlab("Precio Real") +
-  ylab("Predicciones")
-
-# Calcular el Error Cuadrático Medio (MSE) en el conjunto de prueba
-mse <- mean((predictions - test_data$selling_price)^2)
-r_squared <- cor(predictions, test_data$selling_price)^2
-
-cat("Error Cuadrático Medio (MSE):", mse, "\n")
-cat("Coeficiente de Determinación (R²):", r_squared, "\n")
 ```
 Hemos creado un modelo de entrenamiento predictivo.
 Obtenemos un MSE de 4.783 y un Coeficiente de Determinación 0.72.
@@ -509,16 +479,18 @@ head(comparison_cv)
 ggplot(comparison_cv, aes(x = Real, y = Predicciones)) +
   geom_point() +
   geom_abline(intercept = 0, slope = 1, linetype = "dashed", color = "red") +
-  ggtitle("Comparación entre Valores Reales y Predicciones (Validación Cruzada k-fold)") +
+  ggtitle("Comparación entre Valores Reales y Predicciones (Random Forest)") +
   xlab("Precio Real") +
   ylab("Predicciones")
 
 # Calcular el Error Cuadrático Medio (MSE) durante la validación cruzada
-mse_cv <- mean((predictions_cv - car_dataset_total$selling_price)^2)
-r_squared_cv <- cor(predictions_cv, car_dataset_total$selling_price)^2
+mse_rf <- mean((predictions_cv - car_dataset_total$selling_price)^2)
+r_squared_rf <- cor(predictions_cv, car_dataset_total$selling_price)^2
+mae_rf <- mean(abs(predictions_cv - car_dataset_total$selling_price))
 
-cat("Error Cuadrático Medio (MSE) durante la Validación Cruzada:", mse_cv, "\n")
-cat("Coeficiente de Determinación (R²) durante la Validación Cruzada:", r_squared_cv, "\n")
+cat("Error Cuadrático Medio (MSE) (Random Forest):", mse_rf, "\n")
+cat("Coeficiente de Determinación (R²) (Random Forest):", r_squared_rf, "\n")
+cat("Error Absoluto Medio (MAE) (Random Forest):", mae_rf, "\n")
 ```
 ```{r}
 car_dataset_total$selling_price_log <- log1p(car_dataset_total$selling_price)
@@ -546,16 +518,18 @@ head(comparison_cv)
 ggplot(comparison_cv, aes(x = Real, y = Predicciones)) +
   geom_point() +
   geom_abline(intercept = 0, slope = 1, linetype = "dashed", color = "red") +
-  ggtitle("Comparación entre Valores Reales y Predicciones (Validación Cruzada k-fold)") +
+  ggtitle("Comparación entre Valores Reales y Predicciones (Regresión Lineal)") +
   xlab("Precio Real") +
   ylab("Predicciones")
 
 # Calcular el Error Cuadrático Medio (MSE) durante la validación cruzada
-mse_cv <- mean((predictions_cv - car_dataset_total$selling_price)^2)
-r_squared_cv <- cor(predictions_cv, car_dataset_total$selling_price)^2
+mse_lm <- mean((predictions_cv - car_dataset_total$selling_price)^2)
+r_squared_lm <- cor(predictions_cv, car_dataset_total$selling_price)^2
+mae_lm <- mean(abs(predictions_cv - car_dataset_total$selling_price))
 
-cat("Error Cuadrático Medio (MSE) durante la Validación Cruzada:", mse_cv, "\n")
-cat("Coeficiente de Determinación (R²) durante la Validación Cruzada:", r_squared_cv, "\n")
+cat("Error Cuadrático Medio (MSE) (Regresión Lineal):", mse_lm, "\n")
+cat("Coeficiente de Determinación (R²) (Regresión Lineal):", r_squared_lm, "\n")
+cat("Error Absoluto Medio (MAE) (Regresión Lineal):", mae_lm, "\n")
 ```
 
 
@@ -583,17 +557,57 @@ head(comparison_cv)
 ggplot(comparison_cv, aes(x = Real, y = Predicciones)) +
   geom_point() +
   geom_abline(intercept = 0, slope = 1, linetype = "dashed", color = "red") +
-  ggtitle("Comparación entre Valores Reales y Predicciones (Validación Cruzada k-fold)") +
+  ggtitle("Comparación entre Valores Reales y Predicciones (KNN)") +
   xlab("Precio Real") +
   ylab("Predicciones")
 
 # Calcular el Error Cuadrático Medio (MSE) durante la validación cruzada
-mse_cv <- mean((predictions_cv - car_dataset_total$selling_price)^2)
-r_squared_cv <- cor(predictions_cv, car_dataset_total$selling_price)^2
+mse_knn <- mean((predictions_cv - car_dataset_total$selling_price)^2)
+r_squared_knn <- cor(predictions_cv, car_dataset_total$selling_price)^2
+mae_knn <- mean(abs(predictions_cv - car_dataset_total$selling_price))
 
-cat("Error Cuadrático Medio (MSE) durante la Validación Cruzada:", mse_cv, "\n")
-cat("Coeficiente de Determinación (R²) durante la Validación Cruzada:", r_squared_cv, "\n")
+cat("Error Cuadrático Medio (MSE) (KNN):", mse_knn, "\n")
+cat("Coeficiente de Determinación (R²) (KNN):", r_squared_knn, "\n")
+cat("Error Absoluto Medio (MAE) (KNN):", mae_knn, "\n")
 ```
+
+
+```{r}
+algoritmos <- c("KNN", "Regresión Lineal")
+
+# MSE
+mse_group <- c(mse_knn, mse_lm)
+barplot(mse_group, names.arg = algoritmos, col = c("blue", "green", "orange"),
+        main = "Comparación de MSE",
+        ylab = "Valores",
+        ylim = c(0, max(mse_group) * 1.2))  # Ajustar el límite y para mayor claridad
+
+# Agregar etiquetas en las barras
+text(seq_along(mse_group), mse_group, labels = mse_group, pos = 3, col = "black", cex = 0.8)
+
+
+# R²
+r_squared_group <- c(r_squared_knn, r_squared_lm)
+barplot(r_squared_group, names.arg = algoritmos, col = c("blue", "green", "orange"),
+        main = "Comparación de R²",
+        ylab = "Valores",
+        ylim = c(0, max(r_squared_group) * 1.2))  # Ajustar el límite y para mayor claridad
+
+# Agregar etiquetas en las barras
+text(seq_along(r_squared_group), r_squared_group, labels = r_squared_group, pos = 3, col = "black", cex = 0.8)
+
+
+# MAE
+mae_group <- c(mae_knn, mae_lm)
+barplot(mae_group, names.arg = algoritmos, col = c("blue", "green", "orange"),
+        main = "Comparación de MAE",
+        ylab = "Valores",
+        ylim = c(0, max(mae_group) * 1.2))  # Ajustar el límite y para mayor claridad
+
+# Agregar etiquetas en las barras
+text(seq_along(mae_group), mae_group, labels = mae_group, pos = 3, col = "black", cex = 0.8)
+```
+
 
 
 
@@ -643,6 +657,48 @@ rect.hclust(hierarchical_result, k = k, border = 2:k)
 # Visualizar los clusters en un gráfico de dispersión
 plot(variables_clustering, col = clusters_mutated$cluster, main = "ARBOL Clustering", xlab = "Kilómetros Conducidos", ylab = "Año")
 points(clusters_mutated$centers, col = 1:k, pch = 8, cex = 2)
+```
+
+```{r}
+ 
+library(cluster)
+
+library(factoextra)
+ 
+# Asumiendo que car_dataset_total ya está cargado y tiene la estructura adecuada
+ 
+# Seleccionar las variables relevantes para el clustering
+
+
+ 
+# 1. K-Medias
+
+silhouette_kmeans <- silhouette(kmeans_result$cluster, dist(variables_clustering))
+ 
+# 2. Clustering Jerárquico
+
+silhouette_hierarchical <- silhouette(clusters, dist(variables_clustering))
+ 
+# Calcular índices de Silueta promedio para cada método
+
+avg_silhouette_kmeans <- mean(silhouette_kmeans[, "sil_width"])
+
+avg_silhouette_hierarchical <- mean(silhouette_hierarchical[, "sil_width"])
+
+
+cat("Índice promedio de Silueta de K-Means:", avg_silhouette_kmeans, "\n")
+cat("Índice promedio de Silueta de Clustering Jerárquico:", avg_silhouette_hierarchical, "\n")
+ 
+# Visualizar los resultados
+avg_silhouettes <- c(avg_silhouette_kmeans, avg_silhouette_hierarchical)
+barplot(avg_silhouettes, 
+         names.arg = c("K-Medias", "Clustering Jerárquico"),
+         col = c("blue", "green"),
+         main = "Comparación de Índices de Silueta",
+         ylab = "Índice de Silueta Promedio",
+         ylim = c(0, max(avg_silhouettes) * 1.2))
+
+text(seq_along(avg_silhouettes), avg_silhouettes, labels = avg_silhouettes, pos = 3, col = "black", cex = 0.8)
 ```
 
 
