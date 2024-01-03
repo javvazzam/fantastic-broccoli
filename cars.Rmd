@@ -22,10 +22,14 @@ if (!requireNamespace("dplyr", quietly = TRUE)) {
 if (!requireNamespace("corrplot", quietly = TRUE)) {
   install.packages("corrplot")
 }
+if (!requireNamespace("randomForest", quietly = TRUE)) {
+  install.packages("randomForest")
+}
 library(caret)
 library(tidyverse)
 library(dplyr)
 library(corrplot)
+library(randomForest)
 ```
 
 ## Carga de datos
