@@ -19,17 +19,30 @@ if (!requireNamespace("tidyverse", quietly = TRUE)) {
 if (!requireNamespace("dplyr", quietly = TRUE)) {
   install.packages("dplyr")
 }
+if (!requireNamespace("ggplot2", quietly = TRUE)) {
+  install.packages("ggplot2")
+}
 if (!requireNamespace("corrplot", quietly = TRUE)) {
   install.packages("corrplot")
 }
 if (!requireNamespace("randomForest", quietly = TRUE)) {
   install.packages("randomForest")
 }
+if (!requireNamespace("cluster", quietly = TRUE)) {
+  install.packages("cluster")
+}
+if (!requireNamespace("factoextra", quietly = TRUE)) {
+  install.packages("factoextra")
+}
+
 library(caret)
 library(tidyverse)
 library(dplyr)
+library(ggplot2)
 library(corrplot)
 library(randomForest)
+library(cluster)
+library(factoextra)
 ```
 
 ## Carga de datos
@@ -327,8 +340,6 @@ head(car_dataset_total)
 
 Gráfico de barras para tipo de combustible
 ```{r}
-library(ggplot2)
-
 # Gráfico de barras para el tipo de combustible
 ggplot(car_dataset_total, aes(x = fuel, fill = fuel)) +
   geom_bar() +
@@ -396,9 +407,6 @@ ggplot(car_dataset_total, aes(x = transmission, y = selling_price, fill = transm
 
 Mapa de calor comparando la correlación entre las variables numéricas en el conjunto de datos.
 ```{r}
-# Carga la biblioteca
-library(corrplot)
-
 # Selecciona solo las variables numéricas
 numeric_vars <- sapply(car_data_2, is.numeric)
 numeric_data <- car_data_2[, numeric_vars]
@@ -417,8 +425,6 @@ Estos puntos de datos sugieren que los usuarios están más interesados en los a
 A continuación nos centraremos en realizar una análisis de regresión para el conjunto de datos.
 
 ```{r}
-
-
 # Analisis descriptivo Kilometraje - precio
 car_dataset_total$fuel <- as.factor(car_dataset_total$fuel)
 car_dataset_total <- car_dataset_total[car_dataset_total$selling_price <= 50000, ]
@@ -434,8 +440,8 @@ levels(train_data$fuel)
 # Verificar niveles en los datos de prueba
 levels(test_data$fuel)
 
-#Eliminamos dos filas que contienen un par de tipos de fuel que acaban separadas en datos de prueba y de
-#entrenamiento, y por lo tanto hace que no tengan los mismos niveles
+# Eliminamos dos filas que contienen un par de tipos de fuel que acaban separadas en datos de prueba y de
+# entrenamiento, y por lo tanto hace que no tengan los mismos niveles
 train_data <- train_data[!(train_data$fuel %in% c("Petrol + LPG", "Petrol + CNG")), ]
 test_data <- test_data[!(test_data$fuel %in% c("Petrol + LPG", "Petrol + CNG")), ]
 
@@ -445,10 +451,6 @@ summary(train_data)
 ggplot(train_data, aes(x = km_driven, y = selling_price)) +
   geom_point() +
   ggtitle("Relación entre Kilometraje y Precio")
-
-
-
-
 ```
 Hemos creado un modelo de entrenamiento predictivo.
 Obtenemos un MSE de 4.783 y un Coeficiente de Determinación 0.72.
@@ -471,9 +473,9 @@ model_CV <- train(selling_price_log ~ make + km_driven + year + fuel + transmiss
 # Realizar predicciones durante la validación cruzada
 predictions_cv <- predict(model_CV)
 predictions_original <- expm1(predictions_cv)
- 
+
 # Comparar las predicciones con los valores reales en cada iteración
-comparison_cv <- data.frame(Real = car_dataset_total$selling_price , Predicciones = predictions_original)
+comparison_cv <- data.frame(Real = car_dataset_total$selling_price, Predicciones = predictions_original)
 
 
 # Visualizar las primeras filas de la comparación
@@ -546,9 +548,9 @@ model_CV <- train(selling_price ~ make + km_driven + year + fuel + transmission 
 )
 # Realizar predicciones durante la validación cruzada
 predictions_cv <- predict(model_CV)
- 
+
 # Comparar las predicciones con los valores reales en cada iteración
-comparison_cv <- data.frame(Real = car_dataset_total$selling_price , Predicciones = predictions_cv)
+comparison_cv <- data.frame(Real = car_dataset_total$selling_price, Predicciones = predictions_cv)
 
 
 # Visualizar las primeras filas de la comparación
@@ -578,10 +580,12 @@ algoritmos <- c("Regresión Lineal", "Random Forest", "KNN")
 
 # MSE
 mse_group <- c(mse_lm, mse_rf, mse_knn)
-barplot(mse_group, names.arg = algoritmos, col = c("blue", "green", "orange"),
-        main = "Comparación de MSE",
-        ylab = "Valores",
-        ylim = c(0, max(mse_group) * 1.2))  # Ajustar el límite y para mayor claridad
+barplot(mse_group,
+  names.arg = algoritmos, col = c("blue", "green", "orange"),
+  main = "Comparación de MSE",
+  ylab = "Valores",
+  ylim = c(0, max(mse_group) * 1.2)
+) # Ajustar el límite y para mayor claridad
 
 # Agregar etiquetas en las barras
 text(seq_along(mse_group), mse_group, labels = mse_group, pos = 3, col = "black", cex = 0.8)
@@ -589,10 +593,12 @@ text(seq_along(mse_group), mse_group, labels = mse_group, pos = 3, col = "black"
 
 # R²
 r_squared_group <- c(r_squared_lm, r_squared_rf, r_squared_knn)
-barplot(r_squared_group, names.arg = algoritmos, col = c("blue", "green", "orange"),
-        main = "Comparación de R²",
-        ylab = "Valores",
-        ylim = c(0, max(r_squared_group) * 1.2))  # Ajustar el límite y para mayor claridad
+barplot(r_squared_group,
+  names.arg = algoritmos, col = c("blue", "green", "orange"),
+  main = "Comparación de R²",
+  ylab = "Valores",
+  ylim = c(0, max(r_squared_group) * 1.2)
+) # Ajustar el límite y para mayor claridad
 
 # Agregar etiquetas en las barras
 text(seq_along(r_squared_group), r_squared_group, labels = r_squared_group, pos = 3, col = "black", cex = 0.8)
@@ -600,10 +606,12 @@ text(seq_along(r_squared_group), r_squared_group, labels = r_squared_group, pos 
 
 # MAE
 mae_group <- c(mae_lm, mae_rf, mae_knn)
-barplot(mae_group, names.arg = algoritmos, col = c("blue", "green", "orange"),
-        main = "Comparación de MAE",
-        ylab = "Valores",
-        ylim = c(0, max(mae_group) * 1.2))  # Ajustar el límite y para mayor claridad
+barplot(mae_group,
+  names.arg = algoritmos, col = c("blue", "green", "orange"),
+  main = "Comparación de MAE",
+  ylab = "Valores",
+  ylim = c(0, max(mae_group) * 1.2)
+) # Ajustar el límite y para mayor claridad
 
 # Agregar etiquetas en las barras
 text(seq_along(mae_group), mae_group, labels = mae_group, pos = 3, col = "black", cex = 0.8)
@@ -614,44 +622,43 @@ text(seq_along(mae_group), mae_group, labels = mae_group, pos = 3, col = "black"
 
 ```{r}
 variables_clustering <- car_dataset_total[, c("km_driven", "year")]
- 
+
 # Normalizar las variables si es necesario
-#scaled_variables <- scale(variables_clustering)
- 
+# scaled_variables <- scale(variables_clustering)
+
 # Especificar el número de clusters (k)
 k <- 3
- 
+
 # Aplicar k-medias
 kmeans_result <- kmeans(variables_clustering, centers = k)
- 
+
 # Mostrar los resultados
 print(kmeans_result)
- 
+
 # Visualizar los clusters en un gráfico de dispersión
 plot(variables_clustering, col = kmeans_result$cluster, main = "K-Medias Clustering", xlab = "Kilómetros Conducidos", ylab = "Año")
 points(kmeans_result$centers, col = 1:k, pch = 8, cex = 2)
 ```
 
 ```{r}
- 
 # Asumiendo que car_dataset_total ya está cargado y tiene la estructura adecuada
- 
+
 # Seleccionar las variables relevantes para el clustering
 variables_clustering <- car_dataset_total[, c("km_driven", "year")]
- 
+
 # Calcular la matriz de distancias
 dist_matrix <- dist(variables_clustering)
- 
+
 # Aplicar clustering jerárquico
 hierarchical_result <- hclust(dist_matrix, method = "ward.D2")
- 
+
 # Cortar el dendrograma para obtener clusters
 k <- 3
 clusters <- cutree(hierarchical_result, k)
- 
+
 # Agregar la columna de clusters al conjunto de datos
 clusters_mutated <- mutate(variables_clustering, cluster = as.factor(clusters))
- 
+
 plot(hierarchical_result, main = "Clustering Jerárquico", xlab = "Índice de la Observación", ylab = "Altura")
 rect.hclust(hierarchical_result, k = k, border = 2:k)
 
@@ -661,25 +668,20 @@ points(clusters_mutated$centers, col = 1:k, pch = 8, cex = 2)
 ```
 
 ```{r}
- 
-library(cluster)
-
-library(factoextra)
- 
 # Asumiendo que car_dataset_total ya está cargado y tiene la estructura adecuada
- 
+
 # Seleccionar las variables relevantes para el clustering
 
 
- 
+
 # 1. K-Medias
 
 silhouette_kmeans <- silhouette(kmeans_result$cluster, dist(variables_clustering))
- 
+
 # 2. Clustering Jerárquico
 
 silhouette_hierarchical <- silhouette(clusters, dist(variables_clustering))
- 
+
 # Calcular índices de Silueta promedio para cada método
 
 avg_silhouette_kmeans <- mean(silhouette_kmeans[, "sil_width"])
@@ -689,15 +691,16 @@ avg_silhouette_hierarchical <- mean(silhouette_hierarchical[, "sil_width"])
 
 cat("Índice promedio de Silueta de K-Means:", avg_silhouette_kmeans, "\n")
 cat("Índice promedio de Silueta de Clustering Jerárquico:", avg_silhouette_hierarchical, "\n")
- 
+
 # Visualizar los resultados
 avg_silhouettes <- c(avg_silhouette_kmeans, avg_silhouette_hierarchical)
-barplot(avg_silhouettes, 
-         names.arg = c("K-Medias", "Clustering Jerárquico"),
-         col = c("blue", "green"),
-         main = "Comparación de Índices de Silueta",
-         ylab = "Índice de Silueta Promedio",
-         ylim = c(0, max(avg_silhouettes) * 1.2))
+barplot(avg_silhouettes,
+  names.arg = c("K-Medias", "Clustering Jerárquico"),
+  col = c("blue", "green"),
+  main = "Comparación de Índices de Silueta",
+  ylab = "Índice de Silueta Promedio",
+  ylim = c(0, max(avg_silhouettes) * 1.2)
+)
 
 text(seq_along(avg_silhouettes), avg_silhouettes, labels = avg_silhouettes, pos = 3, col = "black", cex = 0.8)
 ```
