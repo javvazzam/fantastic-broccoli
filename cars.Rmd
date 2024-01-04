@@ -352,7 +352,7 @@ car_dataset_total <- car_dataset_total %>%
 head(car_dataset_total)
 ```
 
-## Visualizazión
+## Visualización
 Vamos a proceder a visualizar los datos de los que disponemos. Empezaremos mostrando un gráfico de barras para los tipos de combustible existentes en nuestro dataset.
 
 ```{r}
@@ -415,7 +415,7 @@ Veamos un gráfico de barras apiladas para el tipo de propietario.
 # Gráfico de barras apiladas para el tipo de propietario
 ggplot(car_dataset_total, aes(x = factor(owner), fill = owner)) +
   geom_bar(position = "stack") +
-  ggtitle("Distribución de Tipos de Propietario en car_data_2") +
+  ggtitle("Distribución de Tipos de Propietario") +
   xlab("Tipo de Propietario") +
   ylab("Frecuencia") +
   theme_minimal()
