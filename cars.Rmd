@@ -348,7 +348,7 @@ Gráfico de barras para tipo de combustible
 # Gráfico de barras para el tipo de combustible
 ggplot(car_dataset_total, aes(x = fuel, fill = fuel)) +
   geom_bar() +
-  ggtitle("Distribución de Tipos de Combustible en car_data_2") +
+  ggtitle("Distribución de Tipos de Combustible en car_dataset_total") +
   xlab("Tipo de Combustible") +
   ylab("Frecuencia") +
   theme_minimal()
@@ -359,7 +359,7 @@ Gráfico de barras para tipo de dispersión
 # Gráfico de barras para el tipo de transmisión
 ggplot(car_dataset_total, aes(x = transmission, fill = transmission)) +
   geom_bar() +
-  ggtitle("Distribución de Tipos de Transmisión en car_data_2") +
+  ggtitle("Distribución de Tipos de Transmisión en car_dataset_total") +
   xlab("Tipo de Transmisión") +
   ylab("Frecuencia") +
   theme_minimal()
@@ -370,7 +370,7 @@ Gráfico de dispersión para año y precio de venta
 # Gráfico de dispersión para año y precio de venta
 ggplot(car_dataset_total, aes(x = year, y = selling_price)) +
   geom_point() +
-  ggtitle("Relación entre Año y Precio de Venta en car_data_2") +
+  ggtitle("Relación entre Año y Precio de Venta en car_dataset_total") +
   xlab("Año") +
   ylab("Precio de Venta") +
   theme_minimal()
@@ -382,7 +382,7 @@ Gráfico de torta para el tipo de vendedor
 ggplot(car_dataset_total, aes(x = factor(1), fill = seller_type)) +
   geom_bar(width = 1, stat = "count") +
   coord_polar(theta = "y") +
-  ggtitle("Distribución de Tipos de Vendedor en car_data_2") +
+  ggtitle("Distribución de Tipos de Vendedor en car_dataset_total") +
   theme_void() +
   theme(legend.position = "bottom")
 ```
@@ -392,7 +392,7 @@ Gráfico de barras apiladas para tipo de propietario
 # Gráfico de barras apiladas para el tipo de propietario
 ggplot(car_dataset_total, aes(x = factor(owner), fill = owner)) +
   geom_bar(position = "stack") +
-  ggtitle("Distribución de Tipos de Propietario en car_data_2") +
+  ggtitle("Distribución de Tipos de Propietario en car_dataset_total") +
   xlab("Tipo de Propietario") +
   ylab("Frecuencia") +
   theme_minimal()
@@ -404,7 +404,7 @@ Gráfico de violín para comparar la distribución de precios por tipo de transm
 # Gráfico de violín para comparar la distribución de precios por tipo de transmisión
 ggplot(car_dataset_total, aes(x = transmission, y = selling_price, fill = transmission)) +
   geom_violin(trim = FALSE) +
-  ggtitle("Distribución de Precios de Venta por Tipo de Transmisión en car_data_2") +
+  ggtitle("Distribución de Precios de Venta por Tipo de Transmisión en car_dataset_total") +
   xlab("Tipo de Transmisión") +
   ylab("Precio de Venta") +
   theme_minimal()
