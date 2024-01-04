@@ -6,7 +6,11 @@ output:
 ---
 
 ## Introducción
-(Escribir introducción)
+En el siguiente script, procederemos a analizar un dataset de coches con el objetivo de sacar conclusiones como de que forma varía el precio, según sus características...
+
+Este dataset lo podemos encontrar en https://www.kaggle.com/datasets/nehalbirla/vehicle-dataset-from-cardekho
+
+Los datos de este dataset han sido analizados por separado y preprocesados para formar una única fuente de datos. No sólo nos hemos centrado en sacar conclusiones sobre el análisis de los vehículos, sino también probar a construir diferentes modelos con diferentes métodos y evaluar cuáles salen más rentables y por qué.
 
 ## Importación de librerias
 ```{r}
