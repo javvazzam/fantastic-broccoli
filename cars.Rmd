@@ -1,7 +1,8 @@
 ---
 title: "Modelo predictivo de precios de coches"
 author: "Grupo 8 - FID"
-output: html_document
+output:
+  html_document: default
 ---
 
 ## Introducción
