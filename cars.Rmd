@@ -6,15 +6,19 @@ output:
 ---
 
 ## Introducción
-En el siguiente script, procederemos a analizar un dataset de coches con el objetivo de sacar conclusiones como de que forma varía el precio, según sus características...
+La venta y compra de coches es un mercado que genera muchos datos interesantes que pueden ser tratados usando distintas tecnologías de la información para obtener conocimiento. En el presente proyecto realizamos un estudio de los datos de coches usados que se encuentran en venta.
 
-Este dataset lo podemos encontrar en https://www.kaggle.com/datasets/nehalbirla/vehicle-dataset-from-cardekho
+El objetivo principal de este proyecto es crear modelos que sean capaces de predecir el precio de un coche dados sus datos. Aplicaremos distintos algoritmos y compararemos sus resultados. Además, realizaremos un análisis descriptivo de los datos que tenemos.
 
-Los datos de este dataset han sido analizados por separado y preprocesados para formar una única fuente de datos. No sólo nos hemos centrado en sacar conclusiones sobre el análisis de los vehículos, sino también probar a construir diferentes modelos con diferentes métodos y evaluar cuáles salen más rentables y por qué.
+A continuación, procederemos a analizar una serie de datasets de coches usados con el objetivo de sacar conclusiones y crear los modelos. Los datasets usados los podemos encontrar en https://www.kaggle.com/datasets/nehalbirla/vehicle-dataset-from-cardekho.
+
+Los datos de este dataset han sido analizados por separado y preprocesados para formar una única fuente de datos. No sólo nos hemos centrado en sacar conclusiones sobre el análisis de los vehículos, sino también buscamos construir diferentes modelos con diferentes métodos y evaluar cuáles obtienen mejores resultados y por qué.
 
 ## Importación de librerias
+En primer lugar, importaremos las librerias que necesitaremos durante la ejecución del presente proyecto.
+
 ```{r}
-# Importación de librerías
+# Instalación de librerías
 if (!requireNamespace("caret", quietly = TRUE)) {
   install.packages("caret")
 }
@@ -40,6 +44,7 @@ if (!requireNamespace("factoextra", quietly = TRUE)) {
   install.packages("factoextra")
 }
 
+# Importación de librerías
 library(caret)
 library(tidyverse)
 library(dplyr)
@@ -51,8 +56,15 @@ library(factoextra)
 ```
 
 ## Carga de datos
+A continuación, cargaremos los datos de los datasets. Es importante mencionar que, con el fin de trabajar con unos nombres más normalizados, hemos renombrado los datasets encontrados en la web Kaggle de la siguiente manera:
+
+- car data.csv -> car_data_1.csv
+- CAR DETAILS FROM CAR DEKHO.csv -> car_data_2.csv
+- Car details v3.csv -> car_data_3.csv
+- car details v4.csv -> car_data_4.csv
+
 ```{r}
-# Carga de ficheros:
+# Carga de ficheros
 car_data_1 <- read.csv("datasets/car_data_1.csv")
 car_data_2 <- read.csv("datasets/car_data_2.csv")
 car_data_3 <- read.csv("datasets/car_data_3.csv")
@@ -200,7 +212,7 @@ Los valores de estos atributos en el dataset "car_data_4" tienen bastantes difer
 ## Preprocesado de datos
 Dado el objetivo del presente trabajo, se ha tomado la decisión de desestimar el primer dataset "car_data_1", dado que se ha detectado una gran diferencia con el resto de datos de los datasets restantes, lo que dificultaría las tareas de preprocesado, algo que no se pretende en el trabajo desarrollado.
 
-Uno de los datos más relevantes a la hora de realizar un predicción del precio es conocer la marca y el modelo del vehículo. Como hemos podido observar, los datasets "car_data_2" y "car_data_3" tienen una estructura similar en la que la marca y el modelo del coche aparecen en el mismo atributo "name". Sin embargo, en el dataset "car_data_4", aparecen dos aributos "Make" y "Model" (marca y modelo, respectivamente). Dado que ambos son valores a tener en cuenta de forma individual, se ha optado por separar el atributo "name" de los datasets "car_data_2" y "car_data_3" en dos atributos diferentes.
+Uno de los datos más relevantes a la hora de realizar un predicción del precio es la marca y el modelo del vehículo. Como hemos podido observar, los datasets "car_data_2" y "car_data_3" tienen una estructura similar en la que la marca y el modelo del coche aparecen en el mismo atributo "name". Sin embargo, en el dataset "car_data_4", aparecen dos aributos "Make" y "Model" (marca y modelo, respectivamente). Dado que ambos son valores a tener en cuenta de forma individual, se ha optado por separar el atributo "name" de los datasets "car_data_2" y "car_data_3" en dos atributos diferentes.
 
 ```{r}
 # Usando la función mutate, creamos dos nuevos atributos a partir del atributo name
@@ -340,54 +352,65 @@ car_dataset_total <- car_dataset_total %>%
 head(car_dataset_total)
 ```
 
-
 ## Visualizazión
+Vamos a proceder a visualizar los datos de los que disponemos. Empezaremos mostrando un gráfico de barras para los tipos de combustible existentes en nuestro dataset.
 
-Gráfico de barras para tipo de combustible
 ```{r}
 # Gráfico de barras para el tipo de combustible
 ggplot(car_dataset_total, aes(x = fuel, fill = fuel)) +
   geom_bar() +
-  ggtitle("Distribución de Tipos de Combustible en car_data_2") +
+  ggtitle("Distribución de Tipos de Combustible") +
   xlab("Tipo de Combustible") +
   ylab("Frecuencia") +
   theme_minimal()
 ```
 
-Gráfico de barras para tipo de dispersión
+Podemos observar que la gran mayoría de coches son diesel o gasolina, con un número muy bajo de los otros tipos de combustible.
+
+A continuación, mostraremos un gráfico de barras para los tipos de transmisión.
+
 ```{r}
 # Gráfico de barras para el tipo de transmisión
 ggplot(car_dataset_total, aes(x = transmission, fill = transmission)) +
   geom_bar() +
-  ggtitle("Distribución de Tipos de Transmisión en car_data_2") +
+  ggtitle("Distribución de Tipos de Transmisión") +
   xlab("Tipo de Transmisión") +
   ylab("Frecuencia") +
   theme_minimal()
 ```
 
-Gráfico de dispersión para año y precio de venta
+A pesar de que la gran mayoría de coches son manuales, existe un número considerable de coches automáticos en el dataset, teniendo en cuenta que contamos con 14527 datos, como hemos visto anteriormente.
+
+Presentamos un gráfico de dispersión para año y precio de venta.
+
 ```{r}
 # Gráfico de dispersión para año y precio de venta
 ggplot(car_dataset_total, aes(x = year, y = selling_price)) +
   geom_point() +
-  ggtitle("Relación entre Año y Precio de Venta en car_data_2") +
+  ggtitle("Relación entre Año y Precio de Venta") +
   xlab("Año") +
   ylab("Precio de Venta") +
   theme_minimal()
 ```
 
-Gráfico de torta para el tipo de vendedor
+A simple vista, podemos observar que los coches más nuevos son, por norma general, más caros que los coches más antiguos.
+
+A continuación, vemos un gráfico de torta para el tipo de vendedor.
+
 ```{r}
 # Gráfico circular para el tipo de vendedor
 ggplot(car_dataset_total, aes(x = factor(1), fill = seller_type)) +
   geom_bar(width = 1, stat = "count") +
   coord_polar(theta = "y") +
-  ggtitle("Distribución de Tipos de Vendedor en car_data_2") +
+  ggtitle("Distribución de Tipos de Vendedor") +
   theme_void() +
   theme(legend.position = "bottom")
 ```
 
-Gráfico de barras apiladas para tipo de propietario
+La mayoría de los datos representan vendedores individuales.
+
+Veamos un gráfico de barras apiladas para el tipo de propietario.
+
 ```{r}
 # Gráfico de barras apiladas para el tipo de propietario
 ggplot(car_dataset_total, aes(x = factor(owner), fill = owner)) +
@@ -398,19 +421,24 @@ ggplot(car_dataset_total, aes(x = factor(owner), fill = owner)) +
   theme_minimal()
 ```
 
-Gráfico de violín para comparar la distribución de precios por tipo de transmisión
+Podemos ver que la cantidad de vehiculos que han tenido un mayor número de propietarios disminuye cuanto mayor es el número de propietarios. De esta forma, la mayoría de los datos son coches que han tenido un propietario.
+
+Presentamos un gráfico de violín para comparar la distribución de precios por el tipo de transmisión.
 
 ```{r}
 # Gráfico de violín para comparar la distribución de precios por tipo de transmisión
 ggplot(car_dataset_total, aes(x = transmission, y = selling_price, fill = transmission)) +
   geom_violin(trim = FALSE) +
-  ggtitle("Distribución de Precios de Venta por Tipo de Transmisión en car_data_2") +
+  ggtitle("Distribución de Precios de Venta por Tipo de Transmisión") +
   xlab("Tipo de Transmisión") +
   ylab("Precio de Venta") +
   theme_minimal()
 ```
 
-Mapa de calor comparando la correlación entre las variables numéricas en el conjunto de datos.
+La distribución muestra que los coches automáticos tienden a tener un mayor precio que los manuales.
+
+Por último, presentamos un mapa de calor comparando la correlación entre las variables numéricas en el conjunto de datos.
+
 ```{r}
 # Selecciona solo las variables numéricas
 numeric_vars <- sapply(car_data_2, is.numeric)
@@ -423,50 +451,36 @@ correlation_matrix <- cor(numeric_data)
 corrplot(correlation_matrix, method = "color", addCoef.col = "black", title = "Mapa de Calor de Correlación")
 ```
 
-Estos puntos de datos sugieren que los usuarios están más interesados en los automóviles más nuevos con un precio de venta más bajo y un kilometraje menor.
+Este mapa muestra la relacion entre las variables representadas en las que vemos como el precio de venta tiene cierta relación con el año, mientras que el kilometraje muestra una relación similar pero inversa con el año.
 
-
-
-A continuación nos centraremos en realizar una análisis de regresión para el conjunto de datos.
+## Predicción
+En esta sección del proyecto vamos a plantear modelos predictivos que puedan predecir el precio del vehículo atendiendo a sus características. Hacemos un último tratamiento simple de los datos antes de plantear los modelos y buscamos outliers.
 
 ```{r}
-# Analisis descriptivo Kilometraje - precio
+# Tratamiento previo de los datos de combustible
 car_dataset_total$fuel <- as.factor(car_dataset_total$fuel)
+
+# Realizamos histograma del precio
+ggplot(car_dataset_total) +
+  aes(x = selling_price) +
+  geom_histogram(bins = 20L, fill = "#0c4c8a") +
+  theme_minimal()
+
+# Eliminamos los coches que tengan un precio igual o mayor al valor que consideremos para los outliers
 car_dataset_total <- car_dataset_total[car_dataset_total$selling_price <= 50000, ]
-set.seed(8)
-train_index <- createDataPartition(car_dataset_total$selling_price, p = 0.8, list = FALSE)
-train_data <- car_dataset_total[train_index, ]
-train_data <- na.omit(train_data)
-test_data <- car_dataset_total[-train_index, ]
-
-# Verificar niveles en los datos de entrenamiento
-levels(train_data$fuel)
-
-# Verificar niveles en los datos de prueba
-levels(test_data$fuel)
-
-# Eliminamos dos filas que contienen un par de tipos de fuel que acaban separadas en datos de prueba y de
-# entrenamiento, y por lo tanto hace que no tengan los mismos niveles
-train_data <- train_data[!(train_data$fuel %in% c("Petrol + LPG", "Petrol + CNG")), ]
-test_data <- test_data[!(test_data$fuel %in% c("Petrol + LPG", "Petrol + CNG")), ]
-
-
-# Exploración de Datos (EDA)
-summary(train_data)
-ggplot(train_data, aes(x = km_driven, y = selling_price)) +
-  geom_point() +
-  ggtitle("Relación entre Kilometraje y Precio")
 ```
-Hemos creado un modelo de entrenamiento predictivo.
-Obtenemos un MSE de 4.783 y un Coeficiente de Determinación 0.72.
-Esto significa que, en promedio, las predicciones del modelo tienen un error cuadrático medio de aproximadamente 4.78 unidades de precio al cuadrado; y que aproximadamente el 71.76% de la variabilidad en el precio de venta se explica por las variables incluidas en el modelo.
-En estas gráficas podemos ver la relacion kilómetros recorridos por precio en venta, y la predicción de nuestro modelo relacionando las mismas variables. Vemos que este modelo todavía se puede mejorar y ajustar más.
 
+Como podemos observar, hemos tomado los datos del dataset cuyo precio es inferior a 50000, para evitar posibles outliers.
 
+A continuación, presentamos los modelos realizados. Cabe destacar que los atributos seleccionados para el proyecto excluyen el modelo del vehículo, ya que implicaría un gran coste computacional, desembocando en la necesidad de un elevado tiempo de ejecución.
 
-REGRESIÓN LINEAL
+Empezaremos por un modelo basado en regresión lineal.
+
 ```{r}
+# Usamos una función logarítmica para el precio, evitando errores o valores incoherentes en la predicción, como valores negativos
 car_dataset_total$selling_price_log <- log1p(car_dataset_total$selling_price)
+
+# Usamos validación cruzada
 ctrl <- trainControl(method = "cv", number = 10, verboseIter = TRUE)
 
 # Modelado (Regresión Lineal con validación cruzada k-fold)
@@ -481,7 +495,6 @@ predictions_original <- expm1(predictions_cv)
 
 # Comparar las predicciones con los valores reales en cada iteración
 comparison_cv <- data.frame(Real = car_dataset_total$selling_price, Predicciones = predictions_original)
-
 
 # Visualizar las primeras filas de la comparación
 head(comparison_cv)
@@ -503,9 +516,12 @@ cat("Coeficiente de Determinación (R²) (Regresión Lineal):", r_squared_lm, "\
 cat("Error Absoluto Medio (MAE) (Regresión Lineal):", mae_lm, "\n")
 ```
 
+Podemos observar que la predicción tiende a ser correcta para precios inferiores, pero aumenta la dispersión en valores mayores. El coheficiente de determinación (R²) de 0,61 indica que el modelo no es muy preciso, pero a continuación lo compararemos con otros modelos para observar su desempeño.
 
-RANDOM FOREST
+Procedemos con el modelo basado en random forest.
+
 ```{r}
+# Usamos validación cruzada
 ctrl <- trainControl(method = "cv", number = 2, verboseIter = TRUE)
 
 # Modelado (Random Forest con validación cruzada k-fold)
@@ -540,9 +556,12 @@ cat("Coeficiente de Determinación (R²) (Random Forest):", r_squared_rf, "\n")
 cat("Error Absoluto Medio (MAE) (Random Forest):", mae_rf, "\n")
 ```
 
+Podemos observar una mejora notable en este modelo con respecto al basado en regresión lineal. Aunque el tiempo de ejecución es bastante superior (cerca de 15 minutos) los resultados son mejores, obeteniendo un coheficiente de determinación (R²) de 0,94, además de obtener errores notablemente mejores.
 
-KNN
+Por último, veamos un modelo basado en KNN.
+
 ```{r}
+# Usamos validación cruzada
 ctrl <- trainControl(method = "cv", number = 10, verboseIter = TRUE)
 
 # Modelado (KNN con validación cruzada k-fold)
@@ -556,7 +575,6 @@ predictions_cv <- predict(model_CV)
 
 # Comparar las predicciones con los valores reales en cada iteración
 comparison_cv <- data.frame(Real = car_dataset_total$selling_price, Predicciones = predictions_cv)
-
 
 # Visualizar las primeras filas de la comparación
 head(comparison_cv)
@@ -578,8 +596,10 @@ cat("Coeficiente de Determinación (R²) (KNN):", r_squared_knn, "\n")
 cat("Error Absoluto Medio (MAE) (KNN):", mae_knn, "\n")
 ```
 
+De nuevo, este modelo también funciona relativamente bien con valores pequeños, pero aumenta bastante la dispersión en valores elevados de precios. El error cuadrático medio (MSE) y el error absoluto medio (MAE) son bastante inferiores a los vistos en el modelo de regresión lineal, pero su coheficiente de determinación (R²) es similar.
 
-COMPARACIÓN
+Por último, realizaremos una comparación de los modelos desarrollados.
+
 ```{r}
 algoritmos <- c("Regresión Lineal", "Random Forest", "KNN")
 
@@ -595,7 +615,6 @@ barplot(mse_group,
 # Agregar etiquetas en las barras
 text(seq_along(mse_group), mse_group, labels = mse_group, pos = 3, col = "black", cex = 0.8)
 
-
 # R²
 r_squared_group <- c(r_squared_lm, r_squared_rf, r_squared_knn)
 barplot(r_squared_group,
@@ -607,7 +626,6 @@ barplot(r_squared_group,
 
 # Agregar etiquetas en las barras
 text(seq_along(r_squared_group), r_squared_group, labels = r_squared_group, pos = 3, col = "black", cex = 0.8)
-
 
 # MAE
 mae_group <- c(mae_lm, mae_rf, mae_knn)
@@ -622,32 +640,43 @@ barplot(mae_group,
 text(seq_along(mae_group), mae_group, labels = mae_group, pos = 3, col = "black", cex = 0.8)
 ```
 
+En las gráficas se muestra como el modelo basado en random forest es superior en las tres métricas. El error cuadrático medio (MSE) es muy inferior al de los otros dos modelos, de los que la regresión lineal tiene un valor muy superior al resto, lo que indica un mayor error.
 
+Comparando el coheficiente de determinación (R²), podemos observar similitud entre los modelos de regresión lineal y KNN. Sin embargo, el modelo de random forest destaca, siendo el único que supera el 0,9 en esta métrica.
 
+Por último, vemos la comparativa del error absoluto medio (MAE), en la que se representa una comparación similar a la observada en el error cuadrático medio (MSE). De nuevo, el modelo de random forest obtiene el menor valor de error.
+
+## Clustering
+A continuación, presentamos un estudio descriptivo usando clustering. Veremos dos técnicas en las que relacionaremos el kilometraje y el año de fabricación del coche, creando clusters con los valores que observamos.
+
+Empezaremos aplicando K-Medias
 
 ```{r}
+# Seleccionar las variables relevantes para el clustering
 variables_clustering <- car_dataset_total[, c("km_driven", "year")]
 
-# Normalizar las variables si es necesario
-# scaled_variables <- scale(variables_clustering)
-
-# Especificar el número de clusters (k)
+# Especificar el número de clusters (k). Usaremos k = 3
 k <- 3
 
 # Aplicar k-medias
 kmeans_result <- kmeans(variables_clustering, centers = k)
 
-# Mostrar los resultados
-print(kmeans_result)
+# Imprimir resultados
+cat("Centros de los clusters:\n")
+print(kmeans_result$centers)
+cat("Tamaño de los clusters:\n")
+print(kmeans_result$size)
 
 # Visualizar los clusters en un gráfico de dispersión
-plot(variables_clustering, col = kmeans_result$cluster, main = "K-Medias Clustering", xlab = "Kilómetros Conducidos", ylab = "Año")
+plot(variables_clustering, col = kmeans_result$cluster, main = "K-Medias Clustering", xlab = "Kilometraje", ylab = "Año")
 points(kmeans_result$centers, col = 1:k, pch = 8, cex = 2)
 ```
 
-```{r}
-# Asumiendo que car_dataset_total ya está cargado y tiene la estructura adecuada
+Podemos observar que los clusters se han creado atendiendo a los valores del año y el kilometraje, y los grupos creados son similares. El cluster de los vehiculos con mayor kilometraje muestra los valores más dispersos en comparación con los otros dos clusters.
 
+A continuación, haremos clustering jerárquico usando un árbol.
+
+```{r}
 # Seleccionar las variables relevantes para el clustering
 variables_clustering <- car_dataset_total[, c("km_driven", "year")]
 
@@ -668,31 +697,24 @@ plot(hierarchical_result, main = "Clustering Jerárquico", xlab = "Índice de la
 rect.hclust(hierarchical_result, k = k, border = 2:k)
 
 # Visualizar los clusters en un gráfico de dispersión
-plot(variables_clustering, col = clusters_mutated$cluster, main = "ARBOL Clustering", xlab = "Kilómetros Conducidos", ylab = "Año")
+plot(variables_clustering, col = clusters_mutated$cluster, main = "Clustering Jerárquico", xlab = "Kilometraje", ylab = "Año")
 points(clusters_mutated$centers, col = 1:k, pch = 8, cex = 2)
 ```
 
+Como podemos observar, a diferencia del clustering usando K-Medias, el clustering jerárquico representa dos grandes clusters y un tercero que toma valores muy alejados del resto, con kilometrajes muy altos.
+
+Por último, compararemos los clusterings usando su valor de silueta.
+
 ```{r}
-# Asumiendo que car_dataset_total ya está cargado y tiene la estructura adecuada
-
-# Seleccionar las variables relevantes para el clustering
-
-
-
-# 1. K-Medias
-
+# K-Medias
 silhouette_kmeans <- silhouette(kmeans_result$cluster, dist(variables_clustering))
 
-# 2. Clustering Jerárquico
-
+# Clustering Jerárquico
 silhouette_hierarchical <- silhouette(clusters, dist(variables_clustering))
 
 # Calcular índices de Silueta promedio para cada método
-
 avg_silhouette_kmeans <- mean(silhouette_kmeans[, "sil_width"])
-
 avg_silhouette_hierarchical <- mean(silhouette_hierarchical[, "sil_width"])
-
 
 cat("Índice promedio de Silueta de K-Means:", avg_silhouette_kmeans, "\n")
 cat("Índice promedio de Silueta de Clustering Jerárquico:", avg_silhouette_hierarchical, "\n")
@@ -710,11 +732,7 @@ barplot(avg_silhouettes,
 text(seq_along(avg_silhouettes), avg_silhouettes, labels = avg_silhouettes, pos = 3, col = "black", cex = 0.8)
 ```
 
+El índice de silueta se usa como método para representar la coherencia de los clusterings realizados. Como podemos observar, los valores en ambos casos son similares, siendo ligeramente superior el de K-Medias.
 
-
-
-Una vez aplicamos K-fold CV observamos que las predicciones son más acotadas.
-# **Vehicle Dataset** 
-#  es ideal para modelos predictivos, especialmente regresión, y puede ser interesante si estás enfocado en análisis de mercado y precios.
-# - **Modelos de Regresión Lineal y No Lineal para Predicción de Precios**: Pueden ser más o menos complejos dependiendo de la cantidad y tipo de variables involucradas. En general, este tipo de modelo es manejable para alguien con una comprensión básica de la ciencia de datos.
-# - **Análisis Descriptivo**: Al igual que con el conjunto de datos de salarios, realizar análisis descriptivos es relativamente fácil y puede ofrecer insights valiosos.
+## Conclusión
+Al finalizar el trabajo realizado en el presente proyecto, podemos concluir que los métodos usados para la predicción proporcionan resultados muy distintos, mientras que el clustering es similar en los dos métodos empleados. La predicción con random forest es bastante superior a la realizada con regresión linear y KNN, obteniendo valores mejores en el error cuadrático medio (MSE), el coheficiente de determinación (R²) y el error absoluto medio (MAE). Sin embargo, es cierto que este método eleva el tiempo de ejecución notablemente con respecto a los otros dos. Por lo tanto, sería adecuado emplearlo siempre que el tiempo de ejecución no sea una restricción.
