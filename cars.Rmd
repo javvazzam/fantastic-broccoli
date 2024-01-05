@@ -69,6 +69,8 @@ car_data_1 <- read.csv("datasets/car_data_1.csv")
 car_data_2 <- read.csv("datasets/car_data_2.csv")
 car_data_3 <- read.csv("datasets/car_data_3.csv")
 car_data_4 <- read.csv("datasets/car_data_4.csv")
+
+verboseIter <- FALSE
 ```
 
 ## Visualización inicial de los datos
@@ -481,7 +483,7 @@ Empezaremos por un modelo basado en regresión lineal.
 car_dataset_total$selling_price_log <- log1p(car_dataset_total$selling_price)
 
 # Usamos validación cruzada
-ctrl <- trainControl(method = "cv", number = 10, verboseIter = TRUE)
+ctrl <- trainControl(method = "cv", number = 10, verboseIter = verboseIter)
 
 # Modelado (Regresión Lineal con validación cruzada k-fold)
 model_CV <- train(selling_price_log ~ make + km_driven + year + fuel + transmission + owner + seller_type,
@@ -522,7 +524,7 @@ Procedemos con el modelo basado en random forest.
 
 ```{r}
 # Usamos validación cruzada
-ctrl <- trainControl(method = "cv", number = 2, verboseIter = TRUE)
+ctrl <- trainControl(method = "cv", number = 2, verboseIter = verboseIter)
 
 # Modelado (Random Forest con validación cruzada k-fold)
 model_CV <- train(selling_price ~ make + km_driven + year + fuel + transmission + owner + seller_type,
@@ -562,7 +564,7 @@ Por último, veamos un modelo basado en KNN.
 
 ```{r}
 # Usamos validación cruzada
-ctrl <- trainControl(method = "cv", number = 10, verboseIter = TRUE)
+ctrl <- trainControl(method = "cv", number = 10, verboseIter = verboseIter)
 
 # Modelado (KNN con validación cruzada k-fold)
 model_CV <- train(selling_price ~ make + km_driven + year + fuel + transmission + owner + seller_type,
