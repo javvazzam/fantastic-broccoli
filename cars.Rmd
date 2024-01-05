@@ -19,6 +19,8 @@ En primer lugar, importaremos las librerias que necesitaremos durante la ejecuci
 
 ```{r}
 # Instalación de librerías
+options(warn = -1)
+suppressWarnings(suppressMessages({
 if (!requireNamespace("caret", quietly = TRUE)) {
   install.packages("caret")
 }
@@ -53,6 +55,7 @@ library(corrplot)
 library(randomForest)
 library(cluster)
 library(factoextra)
+}))
 ```
 
 ## Carga de datos
