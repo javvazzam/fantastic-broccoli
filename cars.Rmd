@@ -521,7 +521,7 @@ cat("Coeficiente de Determinación (R²) (Regresión Lineal):", r_squared_lm, "\
 cat("Error Absoluto Medio (MAE) (Regresión Lineal):", mae_lm, "\n")
 ```
 
-Podemos observar que la predicción tiende a ser correcta para precios inferiores, pero aumenta la dispersión en valores mayores. El coheficiente de determinación (R²) de 0,61 indica que el modelo no es muy preciso, pero a continuación lo compararemos con otros modelos para observar su desempeño.
+Podemos observar que la predicción tiende a ser correcta para precios inferiores, pero aumenta la dispersión en valores mayores. El coeficiente de determinación (R²) de 0,61 indica que el modelo no es muy preciso, pero a continuación lo compararemos con otros modelos para observar su desempeño.
 
 Procedemos con el modelo basado en random forest.
 
@@ -561,7 +561,7 @@ cat("Coeficiente de Determinación (R²) (Random Forest):", r_squared_rf, "\n")
 cat("Error Absoluto Medio (MAE) (Random Forest):", mae_rf, "\n")
 ```
 
-Podemos observar una mejora notable en este modelo con respecto al basado en regresión lineal. Aunque el tiempo de ejecución es bastante superior (cerca de 15 minutos) los resultados son mejores, obeteniendo un coheficiente de determinación (R²) de 0,94, además de obtener errores notablemente mejores.
+Podemos observar una mejora notable en este modelo con respecto al basado en regresión lineal. Aunque el tiempo de ejecución es bastante superior (cerca de 15 minutos) los resultados son mejores, obeteniendo un coeficiente de determinación (R²) de 0,94, además de obtener errores notablemente mejores.
 
 Por último, veamos un modelo basado en KNN.
 
@@ -601,7 +601,7 @@ cat("Coeficiente de Determinación (R²) (KNN):", r_squared_knn, "\n")
 cat("Error Absoluto Medio (MAE) (KNN):", mae_knn, "\n")
 ```
 
-De nuevo, este modelo también funciona relativamente bien con valores pequeños, pero aumenta bastante la dispersión en valores elevados de precios. El error cuadrático medio (MSE) y el error absoluto medio (MAE) son bastante inferiores a los vistos en el modelo de regresión lineal, pero su coheficiente de determinación (R²) es similar.
+De nuevo, este modelo también funciona relativamente bien con valores pequeños, pero aumenta bastante la dispersión en valores elevados de precios. El error cuadrático medio (MSE) y el error absoluto medio (MAE) son bastante inferiores a los vistos en el modelo de regresión lineal, pero su coeficiente de determinación (R²) es similar.
 
 Por último, realizaremos una comparación de los modelos desarrollados.
 
@@ -647,7 +647,7 @@ text(seq_along(mae_group), mae_group, labels = mae_group, pos = 3, col = "black"
 
 En las gráficas se muestra como el modelo basado en random forest es superior en las tres métricas. El error cuadrático medio (MSE) es muy inferior al de los otros dos modelos, de los que la regresión lineal tiene un valor muy superior al resto, lo que indica un mayor error.
 
-Comparando el coheficiente de determinación (R²), podemos observar similitud entre los modelos de regresión lineal y KNN. Sin embargo, el modelo de random forest destaca, siendo el único que supera el 0,9 en esta métrica.
+Comparando el coeficiente de determinación (R²), podemos observar similitud entre los modelos de regresión lineal y KNN. Sin embargo, el modelo de random forest destaca, siendo el único que supera el 0,9 en esta métrica.
 
 Por último, vemos la comparativa del error absoluto medio (MAE), en la que se representa una comparación similar a la observada en el error cuadrático medio (MSE). De nuevo, el modelo de random forest obtiene el menor valor de error.
 
@@ -737,7 +737,7 @@ barplot(avg_silhouettes,
 text(seq_along(avg_silhouettes), avg_silhouettes, labels = avg_silhouettes, pos = 3, col = "black", cex = 0.8)
 ```
 
-El índice de silueta se usa como método para representar la coherencia de los clusterings realizados. Como podemos observar, los valores en ambos casos son similares, siendo ligeramente superior el de K-Medias.
+El índice de silueta se usa como método para representar la coherencia de los clusterings realizados. Como podemos observar, los valores en ambos casos son similares, siendo ligeramente superior el de clustering jerárquico.
 
 ## Conclusión
-Al finalizar el trabajo realizado en el presente proyecto, podemos concluir que los métodos usados para la predicción proporcionan resultados muy distintos, mientras que el clustering es similar en los dos métodos empleados. La predicción con random forest es bastante superior a la realizada con regresión linear y KNN, obteniendo valores mejores en el error cuadrático medio (MSE), el coheficiente de determinación (R²) y el error absoluto medio (MAE). Sin embargo, es cierto que este método eleva el tiempo de ejecución notablemente con respecto a los otros dos. Por lo tanto, sería adecuado emplearlo siempre que el tiempo de ejecución no sea una restricción.
+Al finalizar el trabajo realizado en el presente proyecto, podemos concluir que los métodos usados para la predicción proporcionan resultados muy distintos, mientras que el clustering es similar en los dos métodos empleados. La predicción con random forest es bastante superior a la realizada con regresión linear y KNN, obteniendo valores mejores en el error cuadrático medio (MSE), el coeficiente de determinación (R²) y el error absoluto medio (MAE). Sin embargo, es cierto que este método eleva el tiempo de ejecución notablemente con respecto a los otros dos. Por lo tanto, sería adecuado emplearlo siempre que el tiempo de ejecución no sea una restricción.
