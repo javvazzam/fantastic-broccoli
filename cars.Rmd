@@ -1,5 +1,5 @@
 ---
-title: "Modelo predictivo de precios de coches"
+title: "Modelado predictivo y clustering aplicado al mercado de coches usados"
 author: "Grupo 8 - FID"
 output:
   html_document: default
@@ -654,14 +654,33 @@ Por último, vemos la comparativa del error absoluto medio (MAE), en la que se r
 ## Clustering
 A continuación, presentamos un estudio descriptivo usando clustering. Veremos dos técnicas en las que relacionaremos el kilometraje y el año de fabricación del coche, creando clusters con los valores que observamos.
 
-Empezaremos aplicando K-Medias
+Empezaremos aplicando K-Medias. Para ello, usaremos el método del codo para encontrar el valor de k que podemos aplicar.
 
 ```{r}
 # Seleccionar las variables relevantes para el clustering
 variables_clustering <- car_dataset_total[, c("km_driven", "year")]
 
-# Especificar el número de clusters (k). Usaremos k = 3
-k <- 3
+vector_compactacion<-0
+
+for(i in 1:15){
+  km_puntos_aux<-kmeans(variables_clustering,center=i,nstar=50)
+  vector_compactacion[i] <- km_puntos_aux$tot.withinss
+}
+
+# Construye rejilla 1x1
+par(mfrow = c(1,1)) 
+
+# Representamos sum of squares vs. number of clusters
+plot(1:15, vector_compactacion, type = "b", 
+     xlab = "Número de clusters", 
+     ylab = "Compactación")
+```
+
+Como podemos observar, podemos establecer k=4. Proseguimos con la ejecución del clustering.
+
+```{r}
+# Especificar el número de clusters (k). Usaremos k = 4
+k <- 4
 
 # Aplicar k-medias
 kmeans_result <- kmeans(variables_clustering, centers = k)
@@ -677,7 +696,7 @@ plot(variables_clustering, col = kmeans_result$cluster, main = "K-Medias Cluster
 points(kmeans_result$centers, col = 1:k, pch = 8, cex = 2)
 ```
 
-Podemos observar que los clusters se han creado atendiendo a los valores del año y el kilometraje, y los grupos creados son similares. El cluster de los vehiculos con mayor kilometraje muestra los valores más dispersos en comparación con los otros dos clusters.
+Podemos observar que los clusters se han creado atendiendo a los valores del año y el kilometraje, y los grupos creados son similares. El cluster de los vehiculos con mayor kilometraje muestra los valores más dispersos en comparación con los otros tres clusters.
 
 A continuación, haremos clustering jerárquico usando un árbol.
 
@@ -692,7 +711,7 @@ dist_matrix <- dist(variables_clustering)
 hierarchical_result <- hclust(dist_matrix, method = "ward.D2")
 
 # Cortar el dendrograma para obtener clusters
-k <- 3
+k <- 4
 clusters <- cutree(hierarchical_result, k)
 
 # Agregar la columna de clusters al conjunto de datos
@@ -706,7 +725,7 @@ plot(variables_clustering, col = clusters_mutated$cluster, main = "Clustering Je
 points(clusters_mutated$centers, col = 1:k, pch = 8, cex = 2)
 ```
 
-Como podemos observar, a diferencia del clustering usando K-Medias, el clustering jerárquico representa dos grandes clusters y un tercero que toma valores muy alejados del resto, con kilometrajes muy altos.
+Como podemos observar, a diferencia del clustering usando K-Medias, el clustering jerárquico representa tres grandes clusters y un cuarto que toma valores muy alejados del resto, con kilometrajes muy altos.
 
 Por último, compararemos los clusterings usando su valor de silueta.
 
